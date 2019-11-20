@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{7D9ABC10-06FB-4C5A-BE47-3CFF5D17EF65}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Greyhound</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)dependencies\SDL2\include;$(ProjectDir)dependencies\GLEW\include;$(ProjectDir)dependencies\freetype-2.10.1\include;$(ProjectDir)dependencies\glm-0.9.9.6;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)dependencies\SDL2\lib\x86;$(ProjectDir)dependencies\GLEW\lib\Release\Win32;$(ProjectDir)dependencies\freetype-2.10.1\objs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;glew32s.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\GameView.cpp" />
+    <ClCompile Include="Greyhound.cpp" />
+    <ClCompile Include="src\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dependencies\GLEW\include\GL\eglew.h" />
+    <ClInclude Include="dependencies\GLEW\include\GL\glew.h" />
+    <ClInclude Include="dependencies\GLEW\include\GL\glxew.h" />
+    <ClInclude Include="dependencies\GLEW\include\GL\wglew.h" />
+    <ClInclude Include="dependencies\SDL2\include\begin_code.h" />
+    <ClInclude Include="dependencies\SDL2\include\close_code.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\begin_code.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\close_code.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_assert.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_atomic.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_audio.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_bits.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_blendmode.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_clipboard.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_config.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_cpuinfo.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_egl.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_endian.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_error.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_events.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_filesystem.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_gamecontroller.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_gesture.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_haptic.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_hints.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_image.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_joystick.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_keyboard.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_keycode.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_loadso.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_log.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_main.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_messagebox.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_mouse.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_mutex.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_name.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_opengl.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_opengles.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_opengles2.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_opengles2_gl2.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_opengles2_gl2ext.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_opengles2_gl2platform.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_opengles2_khrplatform.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_opengl_glext.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_pixels.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_platform.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_power.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_quit.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_rect.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_render.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_revision.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_rwops.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_scancode.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_sensor.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_shape.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_stdinc.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_surface.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_system.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_syswm.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_assert.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_common.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_compare.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_crc32.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_font.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_fuzzer.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_harness.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_images.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_log.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_md5.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_memory.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_test_random.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_thread.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_timer.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_touch.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_ttf.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_types.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_version.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_video.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL2\SDL_vulkan.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_assert.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_atomic.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_audio.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_bits.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_blendmode.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_clipboard.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_config.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_config_android.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_config_iphoneos.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_config_macosx.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_config_minimal.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_config_pandora.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_config_psp.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_config_windows.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_config_winrt.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_config_wiz.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_copying.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_cpuinfo.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_egl.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_endian.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_error.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_events.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_filesystem.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_gamecontroller.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_gesture.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_haptic.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_hints.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_joystick.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_keyboard.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_keycode.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_loadso.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_log.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_main.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_messagebox.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_mouse.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_mutex.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_name.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_opengl.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_opengles.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_opengles2.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_opengles2_gl2.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_opengles2_gl2ext.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_opengles2_gl2platform.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_opengles2_khrplatform.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_opengl_glext.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_pixels.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_platform.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_power.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_quit.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_rect.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_render.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_revision.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_rwops.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_scancode.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_sensor.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_shape.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_stdinc.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_surface.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_system.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_syswm.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_assert.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_common.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_compare.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_crc32.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_font.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_fuzzer.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_harness.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_images.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_log.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_md5.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_memory.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_test_random.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_thread.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_timer.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_touch.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_ttf.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_types.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_version.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_video.h" />
+    <ClInclude Include="dependencies\SDL2\include\SDL_vulkan.h" />
+    <ClInclude Include="src\Asserts.h" />
+    <ClInclude Include="src\GameView.h" />
+    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="dependencies\GLEW\lib\Release\Win32\glew32.lib" />
+    <Library Include="dependencies\GLEW\lib\Release\Win32\glew32s.lib" />
+    <Library Include="dependencies\SDL2\lib\x86\SDL2.lib" />
+    <Library Include="dependencies\SDL2\lib\x86\SDL2main.lib" />
+    <Library Include="dependencies\SDL2\lib\x86\SDL2test.lib" />
+    <Library Include="dependencies\SDL2\lib\x86\SDL2_ttf.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dependencies\GLEW\bin\Release\Win32\glew32.dll" />
+    <None Include="dependencies\GLEW\doc\advanced.html" />
+    <None Include="dependencies\GLEW\doc\basic.html" />
+    <None Include="dependencies\GLEW\doc\build.html" />
+    <None Include="dependencies\GLEW\doc\credits.html" />
+    <None Include="dependencies\GLEW\doc\glew.html" />
+    <None Include="dependencies\GLEW\doc\glxew.html" />
+    <None Include="dependencies\GLEW\doc\index.html" />
+    <None Include="dependencies\GLEW\doc\install.html" />
+    <None Include="dependencies\GLEW\doc\log.html" />
+    <None Include="dependencies\GLEW\doc\wglew.html" />
+    <None Include="dependencies\SDL2\bin\libfreetype-6.dll" />
+    <None Include="dependencies\SDL2\bin\libjpeg-9.dll" />
+    <None Include="dependencies\SDL2\bin\libpng16-16.dll" />
+    <None Include="dependencies\SDL2\bin\libtiff-5.dll" />
+    <None Include="dependencies\SDL2\bin\libwebp-7.dll" />
+    <None Include="dependencies\SDL2\bin\sdl2-config" />
+    <None Include="dependencies\SDL2\bin\SDL2.dll" />
+    <None Include="dependencies\SDL2\bin\SDL2_image.dll" />
+    <None Include="dependencies\SDL2\bin\SDL2_ttf.dll" />
+    <None Include="dependencies\SDL2\bin\zlib1.dll" />
+    <None Include="dependencies\SDL2\lib\x86\libfreetype-6.dll" />
+    <None Include="dependencies\SDL2\lib\x86\SDL2.dll" />
+    <None Include="dependencies\SDL2\lib\x86\SDL2_ttf.dll" />
+    <None Include="dependencies\SDL2\lib\x86\zlib1.dll" />
+    <None Include="res\Fonts\OpenSans\License!.txt.meta" />
+    <None Include="res\Fonts\OpenSans\OpenSansBold.ttf.meta" />
+    <None Include="res\Fonts\OpenSans\OpenSansLight.ttf.meta" />
+    <None Include="res\Fonts\OpenSans\OpenSansRegular.ttf.meta" />
+    <None Include="res\Fonts\OpenSans\OpenSansSemibold.ttf.meta" />
+    <None Include="res\shaders\circle.fs" />
+    <None Include="res\shaders\circle.vs" />
+    <None Include="res\shaders\shape.fs" />
+    <None Include="res\shaders\shape.vs" />
+    <None Include="res\shaders\text.fs" />
+    <None Include="res\shaders\text.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="dependencies\GLEW\LICENSE.txt" />
+    <Text Include="dependencies\SDL2\bin\LICENSE.freetype.txt" />
+    <Text Include="dependencies\SDL2\bin\LICENSE.jpeg.txt" />
+    <Text Include="dependencies\SDL2\bin\LICENSE.png.txt" />
+    <Text Include="dependencies\SDL2\bin\LICENSE.tiff.txt" />
+    <Text Include="dependencies\SDL2\bin\LICENSE.webp.txt" />
+    <Text Include="dependencies\SDL2\bin\LICENSE.zlib.txt" />
+    <Text Include="dependencies\SDL2\BUGS.txt" />
+    <Text Include="dependencies\SDL2\COPYING.txt" />
+    <Text Include="dependencies\SDL2\README-SDL.txt" />
+    <Text Include="dependencies\SDL2\README.txt" />
+    <Text Include="dependencies\SDL2\WhatsNew.txt" />
+    <Text Include="res\Fonts\OpenSans\License!.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="res\Fonts\Arial\arial.ttf" />
+    <Font Include="res\Fonts\Arial\arialbd.ttf" />
+    <Font Include="res\Fonts\Arial\arialbi.ttf" />
+    <Font Include="res\Fonts\Arial\ariali.ttf" />
+    <Font Include="res\Fonts\Arial\ARIALN.TTF" />
+    <Font Include="res\Fonts\Arial\ARIALNB.TTF" />
+    <Font Include="res\Fonts\Arial\ARIALNBI.TTF" />
+    <Font Include="res\Fonts\Arial\ARIALNI.TTF" />
+    <Font Include="res\Fonts\Arial\ariblk.ttf" />
+    <Font Include="res\Fonts\OpenSans\OpenSansBold.ttf" />
+    <Font Include="res\Fonts\OpenSans\OpenSansLight.ttf" />
+    <Font Include="res\Fonts\OpenSans\OpenSansRegular.ttf" />
+    <Font Include="res\Fonts\OpenSans\OpenSansSemibold.ttf" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
