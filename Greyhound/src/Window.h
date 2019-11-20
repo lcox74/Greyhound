@@ -65,13 +65,13 @@ public:
 	FT_Library ft;
 	FT_Face face;
 
-	void draw_rect(int x, int y, int w, int h, SDL_Color color);
-	void draw_quad(int x1, int y1, int x2, int y2, SDL_Color color);
-	void draw_quad(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, SDL_Color color);
-	void draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, SDL_Color color);
-	void draw_circle(int x, int y, float r, SDL_Color color);
+	void draw_rect(float x, float y, float w, float h, SDL_Color color);
+	void draw_quad(float x1, float y1, float x2, float y2, SDL_Color color);
+	void draw_quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, SDL_Color color);
+	void draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color color);
+	void draw_circle(float x, float y, float r, SDL_Color color);
 	void draw_text(std::string text, float x, float y, float size, SDL_Color color, std::string fontfamily = "res/Fonts/Arial/arial.ttf", float linespace = 1.5873f);
-	void draw_line(int x1, int y1, int x2, int y2, SDL_Color color, int thickness = 1);
+	void draw_line(float x1, float y1, float x2, float y2, SDL_Color color, float thickness = 1);
 
 	float get_relative_x(float x);
 	float get_relative_y(float y);

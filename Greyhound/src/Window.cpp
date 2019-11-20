@@ -116,7 +116,7 @@ void Window::basic_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies,
 	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLES, indeCount, GL_UNSIGNED_INT, NULL);
 
 	this->shapeShader->unbind();
 }
@@ -146,10 +146,10 @@ void Window::circle_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies
 	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, NULL);
 }
 
-void Window::draw_rect(int x, int y, int w, int h, SDL_Color color)
+void Window::draw_rect(float x, float y, float w, float h, SDL_Color color)
 {
 	float x1 = get_relative_x(x);
 	float y1 = get_relative_y(y);
@@ -164,15 +164,16 @@ void Window::draw_rect(int x, int y, int w, int h, SDL_Color color)
 		x2, y1, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
 	};
 
-	GLuint indexData[] = { 0, 1, 2, 3 };
+	GLuint indexData[] = { 0, 1, 2, 
+						   3, 0, 2 };
 
 	this->shapeShader->bind();
-	this->basic_shape_shader(vertices, 24, indexData, 4);
+	this->basic_shape_shader(vertices, 24, indexData, 6);
 	this->shapeShader->unbind();
 	
 }
 
-void Window::draw_quad(int x1, int y1, int x2, int y2, SDL_Color color)
+void Window::draw_quad(float x1, float y1, float x2, float y2, SDL_Color color)
 {
 	float xa = get_relative_x(x1);
 	float ya = get_relative_y(y1);
@@ -187,14 +188,15 @@ void Window::draw_quad(int x1, int y1, int x2, int y2, SDL_Color color)
 		xb, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
 	};
 
-	GLuint indexData[] = { 0, 1, 2, 3 };
+	GLuint indexData[] = { 0, 1, 2,
+						   3, 0, 2 };
 
 	this->shapeShader->bind();
-	this->basic_shape_shader(vertices, 24, indexData, 4);
+	this->basic_shape_shader(vertices, 24, indexData, 6);
 	this->shapeShader->unbind();
 }
 
-void Window::draw_quad(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, SDL_Color color)
+void Window::draw_quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, SDL_Color color)
 {
 	float xa = get_relative_x(x1);
 	float ya = get_relative_y(y1);
@@ -213,14 +215,15 @@ void Window::draw_quad(int x1, int y1, int x2, int y2, int x3, int y3, int x4, i
 		xd, yd, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
 	};
 
-	GLuint indexData[] = { 0, 1, 2, 3 };
+	GLuint indexData[] = { 0, 1, 2,
+						   2, 3, 0 };
 
 	this->shapeShader->bind();
-	this->basic_shape_shader(vertices, 24, indexData, 4);
+	this->basic_shape_shader(vertices, 24, indexData, 6);
 	this->shapeShader->unbind();
 }
 
-void Window::draw_circle(int x, int y, float r, SDL_Color color)
+void Window::draw_circle(float x, float y, float r, SDL_Color color)
 {
 	float x1 = get_relative_x(x);
 	float y1 = get_relative_y(y);
@@ -250,7 +253,7 @@ void Window::draw_circle(int x, int y, float r, SDL_Color color)
 	}
 }
 
-void Window::draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, SDL_Color color)
+void Window::draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color color)
 {
 	
 	float xa = get_relative_x(x1);
@@ -445,13 +448,14 @@ void Window::draw_line(int x1, int y1, int x2, int y2, SDL_Color color)
 }
 */
 
-void Window::draw_line(int x1, int y1, int x2, int y2, SDL_Color color, int thickness)
+void Window::draw_line(float x1, float y1, float x2, float y2, SDL_Color color, float thickness)
 {
-	int x1a, y1a, x1b, y1b, x2a, y2a, x2b, y2b;
+	float x1a, y1a, x1b, y1b, x2a, y2a, x2b, y2b;
 	float temp;
 
 	float halfThickness = thickness / 2;
 
+	/// First Coord Calcs
 	float tempx1 = x2 - x1;
 	float tempy1 = y2 - y1;
 
@@ -463,13 +467,14 @@ void Window::draw_line(int x1, int y1, int x2, int y2, SDL_Color color, int thic
 	tempx1 /= temp;
 	tempy1 /= temp;
 
-	x1a = x1 + (tempy1 * halfThickness);
+	x1a = x1 + (tempx1 * halfThickness);
 	y1a = y1 + (tempy1 * halfThickness);
-	x1b = x1 - (tempy1 * halfThickness);
+	x1b = x1 - (tempx1 * halfThickness);
 	y1b = y1 - (tempy1 * halfThickness);
 
-	int tempx2 = x1 - x2;
-	int tempy2 = y1 - y2;
+	// Second Coord Calcs
+	float tempx2 = x1 - x2;
+	float tempy2 = y1 - y2;
 
 	temp = tempx2;
 	tempx2 = -tempy2;
@@ -484,7 +489,7 @@ void Window::draw_line(int x1, int y1, int x2, int y2, SDL_Color color, int thic
 	x2b = x2 - (tempx2 * halfThickness);
 	y2b = y2 - (tempy2 * halfThickness);
 
-	this->draw_quad(x1a, y1a, x1b, y1b, x2a, y2a, x2b, y2b, color);	
+	this->draw_quad(x1a, y1a, x2b, y2b, x2a, y2a, x1b, y1b, color);
 }
 
 float Window::get_relative_x(float x) 

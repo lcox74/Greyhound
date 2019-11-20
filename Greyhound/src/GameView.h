@@ -10,5 +10,7 @@ public:
 	~GameView();
 
 	void Render();
+
+	bool first;
 };
 
