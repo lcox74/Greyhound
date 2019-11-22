@@ -77,6 +77,10 @@ void Window::init(std::string name, int width, int height, bool bfullscreen)
 
 int Window::window_loop()
 {
+	this->frame_last = this->frame_now;
+	this->frame_now = SDL_GetTicks();
+
+	// Key Setting
 	std::map<KEYCODE, key_event>::iterator it;
 	for (it = keys.begin(); it != keys.end(); it++) {
 		if (it->second.state == 1)
@@ -85,6 +89,24 @@ int Window::window_loop()
 		if (it->second.state == 2)
 			it->second.state = 3;
 	}
+
+	// Left Button
+	if (this->mouse.left_button == 1)
+		this->mouse.left_button = 0;
+	if (this->mouse.left_button == 2)
+		this->mouse.left_button = 3;
+
+	// RIght Button
+	if (this->mouse.right_button == 1)
+		this->mouse.right_button = 0;
+	if (this->mouse.right_button == 2)
+		this->mouse.right_button = 3;
+
+	// Middle Button
+	if (this->mouse.middle_button == 1)
+		this->mouse.middle_button = 0;
+	if (this->mouse.middle_button == 2)
+		this->mouse.middle_button = 3;
 
 	// Get SDL Event and handle quit event
 	while (SDL_PollEvent(&this->sdl_event)) 
@@ -96,6 +118,38 @@ int Window::window_loop()
 			break;
 		case SDL_KEYUP:
 			this->keys[(KEYCODE)this->sdl_event.key.keysym.sym].state = 1;
+			break;
+		case SDL_MOUSEMOTION:
+			this->mouse.x_pos = this->sdl_event.motion.x;
+			this->mouse.y_pos = this->sdl_event.motion.y;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			switch (this->sdl_event.button.button)
+			{
+			case SDL_BUTTON_LEFT:
+				this->mouse.left_button = 2;
+				break;
+			case SDL_BUTTON_RIGHT:
+				this->mouse.right_button = 2;
+				break;
+			case SDL_BUTTON_MIDDLE:
+				this->mouse.middle_button = 2;
+				break;
+			}
+			break;
+		case SDL_MOUSEBUTTONUP:
+			switch (this->sdl_event.button.button)
+			{
+			case SDL_BUTTON_LEFT:
+				this->mouse.left_button = 1;
+				break;
+			case SDL_BUTTON_RIGHT:
+				this->mouse.right_button = 1;
+				break;
+			case SDL_BUTTON_MIDDLE:
+				this->mouse.middle_button = 1;
+				break;
+			}
 			break;
 		case SDL_QUIT:
 			return 0;
@@ -111,6 +165,15 @@ int Window::window_loop()
 	// Swap buffers to display to window
 	glFlush();
 	SDL_GL_SwapWindow(this->sdl_window);
+
+	this->delta_time = (double)(1.0 / (this->frame_now - this->frame_last));
+	this->frame_list.push_back(this->delta_time);
+
+	if (this->frame_list.size() >= this->frame_smooth) 
+	{
+		this->frame_list.erase(this->frame_list.begin());
+		this->frame_list.pop_back();
+	}
 
 	return 1;
 }
@@ -155,7 +218,6 @@ void Window::basic_filled_shape_shader(GLfloat* verts, int vertCount, GLuint* in
 
 void Window::basic_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount)
 {
-
 	glGenVertexArrays(1, &this->VAO);
 	glGenBuffers(1, &this->VBO);
 	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
@@ -231,9 +293,80 @@ void Window::circle_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-bool Window::get_key(KEYCODE key) { return (keys[key].state > 1); }
-bool Window::get_key_down(KEYCODE key) { return (keys[key].state == 2); }
-bool Window::get_key_up(KEYCODE key) { return (keys[key].state == 1); }
+float Window::get_delta_time()
+{
+	return (float)this->delta_time;
+}
+
+float Window::get_delta_time_smooth()
+{
+	return (float)std::accumulate(this->frame_list.begin(), this->frame_list.end(), 0.0) / this->frame_list.size();
+}
+
+int Window::get_frame_rate()
+{
+	return (int) (1000.0 / (1.0 / this->delta_time));
+}
+
+int Window::get_frame_rate_smooth()
+{
+	float average = (float)std::accumulate(this->frame_list.begin(), this->frame_list.end(), 0.0) / this->frame_list.size();
+	return (int)( 1000.0 / (1.0 /  average));
+}
+
+int Window::get_max_frame_rate() { return this->frame_rate_max; }
+void Window::set_max_frame_rate(int max) { this->frame_rate_max = max; }
+
+bool Window::get_key(KEYCODE key) { return (this->keys[key].state > 1); }
+bool Window::get_key_down(KEYCODE key) { return (this->keys[key].state == 2); }
+bool Window::get_key_up(KEYCODE key) { return (this->keys[key].state == 1); }
+
+bool Window::get_mouse_button(MOUSEBUTTON btn)
+{
+	switch (btn)
+	{
+	case MOUSEBUTTON::LEFT:
+		return (this->mouse.left_button > 1);
+	case MOUSEBUTTON::RIGHT:
+		return (this->mouse.right_button > 1);
+	case MOUSEBUTTON::MIDDLE:
+		return (this->mouse.middle_button > 1);
+	}
+	return false;
+}
+
+bool Window::get_mouse_button_down(MOUSEBUTTON btn)
+{
+	switch (btn)
+	{
+	case MOUSEBUTTON::LEFT:
+		return (this->mouse.left_button == 2);
+	case MOUSEBUTTON::RIGHT:
+		return (this->mouse.right_button == 2);
+	case MOUSEBUTTON::MIDDLE:
+		return (this->mouse.middle_button == 2);
+	}
+	return false;
+}
+
+bool Window::get_mouse_button_up(MOUSEBUTTON btn)
+{
+	switch (btn)
+	{
+	case MOUSEBUTTON::LEFT:
+		return (this->mouse.left_button == 1);
+	case MOUSEBUTTON::RIGHT:
+		return (this->mouse.right_button == 1);
+	case MOUSEBUTTON::MIDDLE:
+		return (this->mouse.middle_button == 1);
+	}
+	return false;
+}
+
+int Window::get_mouse_x() { return this->mouse.x_pos; }
+int Window::get_mouse_y() { return this->mouse.y_pos; }
+
+void Window::set_clear_colour(SDL_Color color) { glClearColor( color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f); }
 
 void Window::draw_filled_rect(float x, float y, float w, float h, SDL_Color color)
 {
@@ -444,10 +577,8 @@ void Window::draw_circle(float x, float y, float r, SDL_Color color)
 				glColor3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
 				glVertex3f(prevX, prevY, 0.0f);
 				glVertex3f(newX, newY, 0.0f);
-			glEnd();
-			
+			glEnd();	
 		}
-		
 
 		prevX = newX;
 		prevY = newY;
@@ -505,9 +636,7 @@ void Window::draw_triangle(float x1, float y1, float x2, float y2, float x3, flo
 
 	delete[] vertices;
 	delete[] indexData;
-
 }
-
 
 void Window::text_make_textures(FT_Face face, char ch, GLuint list_base, GLuint* tex_base)
 {
@@ -707,8 +836,6 @@ void Window::draw_text(std::string text, float x, float y, int size, SDL_Color c
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glPopAttrib();
-
-	//our_font.clean();
 }
 
 void Window::draw_line(float x1, float y1, float x2, float y2, SDL_Color color, float thickness)

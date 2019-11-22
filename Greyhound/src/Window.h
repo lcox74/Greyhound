@@ -5,6 +5,7 @@
 #include <map>
 #include <math.h>
 #include <vector>
+#include <numeric>
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
@@ -38,6 +39,14 @@ struct font_data {
 
 struct key_event {
 	Uint8 state = 0;
+};
+
+struct mouse_event {
+	Uint8 left_button = 0;
+	Uint8 right_button = 0;
+	Uint8 middle_button = 0;
+
+	int x_pos = 0, y_pos = 0;
 };
 
 enum class KEYCODE {
@@ -78,6 +87,12 @@ enum class KEYCODE {
 	F21 = SDLK_F21, F22 = SDLK_F22, F23 = SDLK_F23, F24 = SDLK_F24
 };
 
+enum class MOUSEBUTTON {
+	LEFT,
+	MIDDLE,
+	RIGHT
+};
+
 class Window
 {
 public:
@@ -101,12 +116,30 @@ public:
 	FT_Library ft;
 	FT_Face face;
 
+	float get_delta_time();
+	float get_delta_time_smooth();
+
+	int get_frame_rate();
+	int get_frame_rate_smooth();
+
+	int get_max_frame_rate();
+	void set_max_frame_rate(int max);
+
 public: // Key Events
 	bool get_key(KEYCODE key); // If Key is Down + Held
 	bool get_key_down(KEYCODE key); // If Key Just Pressed
 	bool get_key_up(KEYCODE key); // If Key Just Released
 
+	bool get_mouse_button(MOUSEBUTTON btn);
+	bool get_mouse_button_down(MOUSEBUTTON btn);
+	bool get_mouse_button_up(MOUSEBUTTON btn);
+
+	int get_mouse_x();
+	int get_mouse_y();
+
 public: // Draw Calls
+
+	void set_clear_colour(SDL_Color color);
 
 	void draw_filled_rect(float x, float y, float w, float h, SDL_Color color);
 	void draw_rect(float x, float y, float w, float h, SDL_Color color);
@@ -132,6 +165,7 @@ private:
 	std::map<const char*, font_data> fonts;
 
 	std::map<KEYCODE, key_event> keys;
+	struct::mouse_event mouse;
 
 	font_data text_init(std::string font, int size);
 	void text_make_textures(FT_Face face, char ch, GLuint list_base, GLuint* tex_base);
@@ -145,5 +179,12 @@ private:
 	Shader* shapeShader = nullptr;
 	Shader* circleShader = nullptr;
 	Shader* textShader = nullptr;
+
+	std::vector<double> frame_list = std::vector<double>();
+	int frame_smooth = 100;
+	Uint32 frame_now = SDL_GetTicks();
+	Uint32 frame_last = 0;
+	double delta_time = 0;
+	int frame_rate_max = 60;
 };
 

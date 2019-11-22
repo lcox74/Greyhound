@@ -6,8 +6,6 @@
 
 int main()
 {
-    std::cout << "Hello World!\n";
-
 	auto* win = new GameView("Test Window");
 
 	while (win->window_loop()) { }
