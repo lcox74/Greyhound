@@ -52,6 +52,9 @@ void Window::init(std::string name, int width, int height, bool bfullscreen)
 	circleShader = new Shader("res\\shaders\\circle.vs", "res\\shaders\\circle.fs");
 	textShader = new Shader("res\\shaders\\text.vs", "res\\shaders\\text.fs");
 
+	// Init keycodes
+	this->key_init();
+
 	// Define the viewport dimensions
 	glViewport(0, 0, this->width, this->height);
 
@@ -74,26 +77,46 @@ void Window::init(std::string name, int width, int height, bool bfullscreen)
 
 int Window::window_loop()
 {
+	std::map<KEYCODE, key_event>::iterator it;
+	for (it = keys.begin(); it != keys.end(); it++) {
+		if (it->second.state == 1)
+			it->second.state = 0;
+
+		if (it->second.state == 2)
+			it->second.state = 3;
+	}
+
 	// Get SDL Event and handle quit event
-	if (SDL_PollEvent(&this->sdl_event) && this->sdl_event.type == SDL_QUIT) {
-		return 0;
+	while (SDL_PollEvent(&this->sdl_event)) 
+	{
+		switch (this->sdl_event.type)
+		{
+		case SDL_KEYDOWN:
+			this->keys[(KEYCODE)this->sdl_event.key.keysym.sym].state = 2;
+			break;
+		case SDL_KEYUP:
+			this->keys[(KEYCODE)this->sdl_event.key.keysym.sym].state = 1;
+			break;
+		case SDL_QUIT:
+			return 0;
+		}
 	}
 
 	// Clear window
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	// Render window
-	this->Render();
+	this->Update();
 
 	// Swap buffers to display to window
+	glFlush();
 	SDL_GL_SwapWindow(this->sdl_window);
 
 	return 1;
 }
 
-void Window::basic_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount)
+void Window::basic_filled_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount)
 {
-	this->shapeShader->bind();
 
 	glGenVertexArrays(1, &this->VAO);
 	glGenBuffers(1, &this->VBO);
@@ -101,12 +124,12 @@ void Window::basic_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies,
 	glBindVertexArray(this->VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_DYNAMIC_DRAW);
 
 	//Create IBO
 	glGenBuffers(1, &this->IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_DYNAMIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -118,7 +141,54 @@ void Window::basic_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies,
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
 	glDrawElements(GL_TRIANGLES, indeCount, GL_UNSIGNED_INT, NULL);
 
-	this->shapeShader->unbind();
+	glDeleteBuffers(1, &IBO);
+	glDeleteBuffers(1, &VBO);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+
+	glDeleteVertexArrays(1, &this->VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void Window::basic_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount)
+{
+
+	glGenVertexArrays(1, &this->VAO);
+	glGenBuffers(1, &this->VBO);
+	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+	glBindVertexArray(this->VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_DYNAMIC_DRAW);
+
+	//Create IBO
+	glGenBuffers(1, &this->IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_DYNAMIC_DRAW);
+
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// color attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
+	glDrawElements(GL_LINE_LOOP, indeCount, GL_UNSIGNED_INT, NULL);
+
+	glDeleteBuffers(1, &IBO);
+	glDeleteBuffers(1, &VBO);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+
+	glDeleteVertexArrays(1, &this->VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void Window::circle_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount)
@@ -128,12 +198,12 @@ void Window::circle_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies
 	glBindVertexArray(this->VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_DYNAMIC_DRAW);
 
 	//Create IBO
 	glGenBuffers(1, &this->IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_DYNAMIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -147,6 +217,48 @@ void Window::circle_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, NULL);
+	
+	glDeleteBuffers(1, &IBO);
+	glDeleteBuffers(1, &VBO);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+
+	glDeleteVertexArrays(1, &this->VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+bool Window::get_key(KEYCODE key) { return (keys[key].state > 1); }
+bool Window::get_key_down(KEYCODE key) { return (keys[key].state == 2); }
+bool Window::get_key_up(KEYCODE key) { return (keys[key].state == 1); }
+
+void Window::draw_filled_rect(float x, float y, float w, float h, SDL_Color color)
+{
+	float x1 = get_relative_x(x);
+	float y1 = get_relative_y(y);
+	float x2 = get_relative_x(x + w);
+	float y2 = get_relative_y(y + h);
+
+	GLfloat* vertices = new GLfloat[24] {
+		// positions                         // colors
+		x1, y1, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		x1, y2, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		x2, y2, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		x2, y1, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
+	};
+
+	GLuint* indexData = new GLuint[6] { 0, 1, 2,
+										3, 0, 2 };
+
+	this->shapeShader->bind();
+	this->basic_filled_shape_shader(vertices, 24, indexData, 6);
+	this->shapeShader->unbind();
+
+	delete[] vertices;
+	delete[] indexData;
 }
 
 void Window::draw_rect(float x, float y, float w, float h, SDL_Color color)
@@ -156,21 +268,70 @@ void Window::draw_rect(float x, float y, float w, float h, SDL_Color color)
 	float x2 = get_relative_x(x + w);
 	float y2 = get_relative_y(y + h);
 
-	GLfloat vertices[] = {
+	glBegin(GL_LINE_LOOP);
+		glColor3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		glVertex3f(x1, y1, 0.0f);
+		glVertex3f(x2, y1, 0.0f);
+		glVertex3f(x2, y2, 0.0f);
+		glVertex3f(x1, y2, 0.0f);
+	glEnd();
+	
+}
+
+void Window::draw_filled_quad(float x1, float y1, float x2, float y2, SDL_Color color)
+{
+	float xa = get_relative_x(x1);
+	float ya = get_relative_y(y1);
+	float xb = get_relative_x(x2);
+	float yb = get_relative_y(y2);
+
+	GLfloat* vertices = new GLfloat[24] {
 		// positions                         // colors
-		x1, y1, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		x1, y2, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		x2, y2, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		x2, y1, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
+		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		xa, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		xb, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
 	};
 
-	GLuint indexData[] = { 0, 1, 2, 
-						   3, 0, 2 };
+	GLuint* indexData = new GLuint[6]{ 0, 1, 2,
+									   3, 0, 2 };
 
 	this->shapeShader->bind();
-	this->basic_shape_shader(vertices, 24, indexData, 6);
+	this->basic_filled_shape_shader(vertices, 24, indexData, 6);
 	this->shapeShader->unbind();
-	
+
+	delete[] vertices;
+	delete[] indexData;
+}
+
+void Window::draw_filled_quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, SDL_Color color)
+{
+	float xa = get_relative_x(x1);
+	float ya = get_relative_y(y1);
+	float xb = get_relative_x(x2);
+	float yb = get_relative_y(y2);
+	float xc = get_relative_x(x3);
+	float yc = get_relative_y(y3);
+	float xd = get_relative_x(x4);
+	float yd = get_relative_y(y4);
+
+	GLfloat* vertices = new GLfloat[24] {
+		// positions                         // colors
+		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		xc, yc, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		xd, yd, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
+	};
+
+	GLuint* indexData = new GLuint[6] { 0, 1, 2,
+										2, 3, 0 };
+
+	this->shapeShader->bind();
+	this->basic_filled_shape_shader(vertices, 24, indexData, 6);
+	this->shapeShader->unbind();
+
+	delete[] vertices;
+	delete[] indexData;
 }
 
 void Window::draw_quad(float x1, float y1, float x2, float y2, SDL_Color color)
@@ -180,7 +341,7 @@ void Window::draw_quad(float x1, float y1, float x2, float y2, SDL_Color color)
 	float xb = get_relative_x(x2);
 	float yb = get_relative_y(y2);
 
-	GLfloat vertices[] = {
+	GLfloat* vertices = new GLfloat[24]{
 		// positions                         // colors
 		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
 		xa, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
@@ -188,12 +349,15 @@ void Window::draw_quad(float x1, float y1, float x2, float y2, SDL_Color color)
 		xb, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
 	};
 
-	GLuint indexData[] = { 0, 1, 2,
-						   3, 0, 2 };
+	GLuint* indexData = new GLuint[6] { 0, 1, 2,
+										3, 0, 2 };
 
 	this->shapeShader->bind();
 	this->basic_shape_shader(vertices, 24, indexData, 6);
 	this->shapeShader->unbind();
+
+	delete[] vertices;
+	delete[] indexData;
 }
 
 void Window::draw_quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, SDL_Color color)
@@ -207,7 +371,7 @@ void Window::draw_quad(float x1, float y1, float x2, float y2, float x3, float y
 	float xd = get_relative_x(x4);
 	float yd = get_relative_y(y4);
 
-	GLfloat vertices[] = {
+	GLfloat* vertices = new GLfloat[24] {
 		// positions                         // colors
 		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
 		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
@@ -215,15 +379,18 @@ void Window::draw_quad(float x1, float y1, float x2, float y2, float x3, float y
 		xd, yd, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
 	};
 
-	GLuint indexData[] = { 0, 1, 2,
-						   2, 3, 0 };
+	GLuint* indexData = new GLuint[6] { 0, 1, 2,
+									2, 3, 0 };
 
 	this->shapeShader->bind();
 	this->basic_shape_shader(vertices, 24, indexData, 6);
 	this->shapeShader->unbind();
+
+	delete[] vertices;
+	delete[] indexData;
 }
 
-void Window::draw_circle(float x, float y, float r, SDL_Color color)
+void Window::draw_filled_circle(float x, float y, float r, SDL_Color color)
 {
 	float x1 = get_relative_x(x);
 	float y1 = get_relative_y(y);
@@ -253,7 +420,41 @@ void Window::draw_circle(float x, float y, float r, SDL_Color color)
 	}
 }
 
-void Window::draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color color)
+void Window::draw_circle(float x, float y, float r, SDL_Color color)
+{
+	float x1 = get_relative_x(x);
+	float y1 = get_relative_y(y);
+
+	float radiusx = r * 2.0f / this->width;
+	float radiusy = r * 2.0f / this->height;
+
+	const int steps = 100;
+	const float angle = 3.1415926f * 2.0f / steps;
+
+	float prevX = x1;
+	float prevY = y1 + radiusy;
+
+	for (int i = 0; i <= steps; i++) {
+		float newX = x1 + radiusx * sin(angle * i);
+		float newY = y1 - radiusy * cos(angle * i);
+
+		if (prevX != newX) {
+			
+			glBegin(GL_LINES);
+				glColor3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+				glVertex3f(prevX, prevY, 0.0f);
+				glVertex3f(newX, newY, 0.0f);
+			glEnd();
+			
+		}
+		
+
+		prevX = newX;
+		prevY = newY;
+	}
+}
+
+void Window::draw_filled_triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color color)
 {
 	
 	float xa = get_relative_x(x1);
@@ -263,18 +464,48 @@ void Window::draw_triangle(float x1, float y1, float x2, float y2, float x3, flo
 	float xc = get_relative_x(x3);
 	float yc = get_relative_y(y3);
 
-	GLfloat vertices[] = {
+	GLfloat* vertices = new GLfloat[18] {
 		// positions                         // colors
 		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
 		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
 		xc, yc, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
 	};
 
-	GLuint indexData[] = { 0, 1, 2 };
+	GLuint* indexData = new GLuint[3] { 0, 1, 2 };
+
+	this->shapeShader->bind();
+	this->basic_filled_shape_shader(vertices, 18, indexData, 3);
+	this->shapeShader->unbind();
+
+	delete[] vertices;
+	delete[] indexData;
+}
+
+void Window::draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color color)
+{
+	float xa = get_relative_x(x1);
+	float ya = get_relative_y(y1);
+	float xb = get_relative_x(x2);
+	float yb = get_relative_y(y2);
+	float xc = get_relative_x(x3);
+	float yc = get_relative_y(y3);
+
+	GLfloat* vertices = new GLfloat[18] {
+		// positions                         // colors
+		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+		xc, yc, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+	};
+
+	GLuint* indexData = new GLuint[3] { 0, 1, 2 };
 
 	this->shapeShader->bind();
 	this->basic_shape_shader(vertices, 18, indexData, 3);
 	this->shapeShader->unbind();
+
+	delete[] vertices;
+	delete[] indexData;
+
 }
 
 
@@ -291,7 +522,7 @@ void Window::text_make_textures(FT_Face face, char ch, GLuint list_base, GLuint*
 	FT_Bitmap& bitmap = bitmap_glyph->bitmap;
 
 	auto next_power_2 = [](unsigned int x) {
-		int rval = 1;
+		unsigned int rval = 1;
 		while (rval < x) rval <<= 1;
 		return rval;
 	};
@@ -304,7 +535,7 @@ void Window::text_make_textures(FT_Face face, char ch, GLuint list_base, GLuint*
 		for (int i = 0; i < width; i++) {
 			expanded_data[2 * (i + j * width)] = 255;
 			expanded_data[2 * (i + j * width) + 1] =
-				(i >= bitmap.width || j >= bitmap.rows) ? 0 :
+				(i >= (int)bitmap.width || j >= (int)bitmap.rows) ? 0 :
 				bitmap.buffer[i + bitmap.width * j];
 		}
 	}
@@ -323,24 +554,72 @@ void Window::text_make_textures(FT_Face face, char ch, GLuint list_base, GLuint*
 
 	glPushMatrix();
 
-	glTranslatef(bitmap_glyph->left, 0, 0);
-	glTranslatef(0, bitmap_glyph->top - (bitmap.rows * 0.9), 0);
+	glTranslatef((GLfloat)bitmap_glyph->left, 0.0f, 0.0f);
+	glTranslatef(0, bitmap_glyph->top - (bitmap.rows * 0.9f), 0);
 
 	float x = (float)bitmap.width / (float)width,
 		y = (float)bitmap.rows / (float)height;
 
 	glBegin(GL_QUADS);
-	glTexCoord2d(0, 0); glVertex2f(0, bitmap.rows);
+	glTexCoord2d(0, 0); glVertex2i(0, bitmap.rows);
 	glTexCoord2d(0, y); glVertex2f(0, 0);
-	glTexCoord2d(x, y); glVertex2f(bitmap.width, 0);
-	glTexCoord2d(x, 0); glVertex2f(bitmap.width, bitmap.rows);
+	glTexCoord2d(x, y); glVertex2i(bitmap.width, 0);
+	glTexCoord2d(x, 0); glVertex2i(bitmap.width, bitmap.rows);
 	glEnd();
 
 	glPopMatrix();
 
-	glTranslatef(face->glyph->advance.x >> 6, 0, 0);
+	glTranslatef((GLfloat)(face->glyph->advance.x >> 6), 0, 0);
 
 	glEndList();
+}
+
+void Window::key_init()
+{
+	KEYCODE* All = new KEYCODE[110] {
+		// NUMBERS
+		KEYCODE::ALPHA0, KEYCODE::ALPHA1, KEYCODE::ALPHA2, KEYCODE::ALPHA3, KEYCODE::ALPHA4,
+		KEYCODE::ALPHA5, KEYCODE::ALPHA6, KEYCODE::ALPHA7, KEYCODE::ALPHA8, KEYCODE::ALPHA9,
+
+		KEYCODE::A, KEYCODE::B, KEYCODE::C, KEYCODE::D, KEYCODE::E, KEYCODE::F, KEYCODE::G,
+		KEYCODE::H, KEYCODE::I, KEYCODE::J, KEYCODE::K, KEYCODE::L, KEYCODE::M, KEYCODE::N,
+		KEYCODE::O, KEYCODE::P, KEYCODE::Q, KEYCODE::R, KEYCODE::S, KEYCODE::T, KEYCODE::U,
+		KEYCODE::V, KEYCODE::W, KEYCODE::X, KEYCODE::Y, KEYCODE::Z,
+
+		KEYCODE::UP, KEYCODE::DOWN, KEYCODE::LEFT, KEYCODE::RIGHT,
+
+		// COMMANDS
+		KEYCODE::LALT, KEYCODE::LCRTL, KEYCODE::LSHIFT, KEYCODE::LCOMMAND,
+		KEYCODE::RALT, KEYCODE::RCRTL, KEYCODE::RSHIFT, KEYCODE::RCOMMAND,
+
+		KEYCODE::RETURN, KEYCODE::PAGEUP, KEYCODE::PAGEDOWN, KEYCODE::TAB,
+		KEYCODE::PRINTSCREEN, KEYCODE::INSERT, KEYCODE::HOME, KEYCODE::END,
+		KEYCODE::CAPSLOCK, KEYCODE::BACKSPACE, KEYCODE::DEL,
+
+		// SPECIALS
+		KEYCODE::QUOTE, KEYCODE::COMMA, KEYCODE::EQUALS, KEYCODE::LBRACKET,
+		KEYCODE::MINUS, KEYCODE::PERIOD, KEYCODE::RBRACKET, KEYCODE::SEMICOLON,
+		KEYCODE::FORWARDSLASH, KEYCODE::BACKSLASH, KEYCODE::AMPERSAND,
+		KEYCODE::ASTERISK, KEYCODE::AT, KEYCODE::CARET, KEYCODE::COLON,
+		KEYCODE::DOLLAR, KEYCODE::EXCLAIM, KEYCODE::GREATER, KEYCODE::HASH,
+		KEYCODE::LPAREN, KEYCODE::LESS, KEYCODE::PERCENT, KEYCODE::PLUS,
+		KEYCODE::QUESTION, KEYCODE::DQUOTE, KEYCODE::RPAREN, KEYCODE::UNDERSCORE,
+
+		// FUNCTIONS
+		KEYCODE::F1, KEYCODE::F2, KEYCODE::F3, KEYCODE::F4, KEYCODE::F5,
+		KEYCODE::F6, KEYCODE::F7, KEYCODE::F8, KEYCODE::F9, KEYCODE::F10,
+		KEYCODE::F11, KEYCODE::F12, KEYCODE::F13, KEYCODE::F14, KEYCODE::F15,
+		KEYCODE::F16, KEYCODE::F17, KEYCODE::F18, KEYCODE::F19, KEYCODE::F20,
+		KEYCODE::F21, KEYCODE::F22, KEYCODE::F23, KEYCODE::F24
+	};
+
+	key_event empty = {0};
+
+	for (int i = 0; i < 110; i++) {
+		this->keys.insert(std::pair<KEYCODE, key_event>(All[i], empty));
+	}
+
+	delete[] All;
 }
 
 font_data Window::text_init(std::string font, int size)
@@ -353,7 +632,7 @@ font_data Window::text_init(std::string font, int size)
 
 	font_data newFont;
 	newFont.textures.resize(128);
-	newFont.height = size;
+	newFont.height = (float)size;
 
 	FT_Library library;
 	FATAL_ASSERT_MESS(!FT_Init_FreeType(&library), "FT_Init_FreeType failed");
@@ -377,7 +656,7 @@ font_data Window::text_init(std::string font, int size)
 	return newFont;
 }
 
-void Window::draw_text(std::string text, float x, float y, float size, SDL_Color color, std::string fontfamily, float linespace)
+void Window::draw_text(std::string text, float x, float y, int size, SDL_Color color, std::string fontfamily, float linespace)
 {
 	font_data temp = text_init(fontfamily, size);
 	glColor3f((float)color.r / 255.0f, (float)color.g / 255.0f, (float)color.b / 255.0f);
@@ -412,7 +691,7 @@ void Window::draw_text(std::string text, float x, float y, float size, SDL_Color
 	float modelview_matrix[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX, modelview_matrix);
 
-	for (int i = 0; i < lines.size(); i++) {
+	for (unsigned int i = 0; i < lines.size(); i++) {
 		glPushMatrix();
 		glLoadIdentity();
 		glTranslatef(x,this->height - y - h * i, 0);
@@ -431,22 +710,6 @@ void Window::draw_text(std::string text, float x, float y, float size, SDL_Color
 
 	//our_font.clean();
 }
-/*
-void Window::draw_line(int x1, int y1, int x2, int y2, SDL_Color color)
-{
-	float xa = get_relative_x(x1);
-	float ya = get_relative_y(y1);
-	float xb = get_relative_x(x2);
-	float yb = get_relative_y(y2);
-
-
-	glBegin(GL_LINES);
-		glColor3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		glVertex3f(xa, ya, 0.0f);
-		glVertex3f(xb, yb, 0.0f);
-	glEnd();
-}
-*/
 
 void Window::draw_line(float x1, float y1, float x2, float y2, SDL_Color color, float thickness)
 {
@@ -489,7 +752,7 @@ void Window::draw_line(float x1, float y1, float x2, float y2, SDL_Color color, 
 	x2b = x2 - (tempx2 * halfThickness);
 	y2b = y2 - (tempy2 * halfThickness);
 
-	this->draw_quad(x1a, y1a, x2b, y2b, x2a, y2a, x1b, y1b, color);
+	this->draw_filled_quad(x1a, y1a, x2b, y2b, x2a, y2a, x1b, y1b, color);
 }
 
 float Window::get_relative_x(float x) 

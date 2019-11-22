@@ -154,7 +154,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\GameView.cpp" />
     <ClCompile Include="Greyhound.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
