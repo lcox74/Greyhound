@@ -1,7 +1,6 @@
 
 #include <iostream>
 
-#include "src/Asserts.h"
 #include "src/GameView.h"
 
 int main()

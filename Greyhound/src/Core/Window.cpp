@@ -48,11 +48,10 @@ void Window::init(std::string name, int width, int height, bool bfullscreen)
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
+	input = new GH_Input();
+
 	shapeShader = new Shader("res\\shaders\\shape.vs", "res\\shaders\\shape.fs");
 	textShader = new Shader("res\\shaders\\text.vs", "res\\shaders\\text.fs");
-
-	// Init keycodes
-	this->key_init();
 
 	// Define the viewport dimensions
 	glViewport(0, 0, this->width, this->height);
@@ -83,33 +82,7 @@ int Window::window_loop()
 	this->frame_last = this->frame_now;
 	this->frame_now = SDL_GetTicks();
 
-	// Key Setting
-	std::map<KEYCODE, key_event>::iterator it;
-	for (it = keys.begin(); it != keys.end(); it++) {
-		if (it->second.state == 1)
-			it->second.state = 0;
-
-		if (it->second.state == 2)
-			it->second.state = 3;
-	}
-
-	// Left Button
-	if (this->mouse.left_button == 1)
-		this->mouse.left_button = 0;
-	if (this->mouse.left_button == 2)
-		this->mouse.left_button = 3;
-
-	// RIght Button
-	if (this->mouse.right_button == 1)
-		this->mouse.right_button = 0;
-	if (this->mouse.right_button == 2)
-		this->mouse.right_button = 3;
-
-	// Middle Button
-	if (this->mouse.middle_button == 1)
-		this->mouse.middle_button = 0;
-	if (this->mouse.middle_button == 2)
-		this->mouse.middle_button = 3;
+	input->input_update();
 
 	// Get SDL Event and handle quit event
 	while (SDL_PollEvent(&this->sdl_event)) 
@@ -117,42 +90,19 @@ int Window::window_loop()
 		switch (this->sdl_event.type)
 		{
 		case SDL_KEYDOWN:
-			this->keys[(KEYCODE)this->sdl_event.key.keysym.sym].state = 2;
+			input->update_key((KEYCODE)this->sdl_event.key.keysym.sym, 2);
 			break;
 		case SDL_KEYUP:
-			this->keys[(KEYCODE)this->sdl_event.key.keysym.sym].state = 1;
-			break;
-		case SDL_MOUSEMOTION:
-			this->mouse.x_pos = this->sdl_event.motion.x;
-			this->mouse.y_pos = this->sdl_event.motion.y;
+			input->update_key((KEYCODE)this->sdl_event.key.keysym.sym, 1);
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			switch (this->sdl_event.button.button)
-			{
-			case SDL_BUTTON_LEFT:
-				this->mouse.left_button = 2;
-				break;
-			case SDL_BUTTON_RIGHT:
-				this->mouse.right_button = 2;
-				break;
-			case SDL_BUTTON_MIDDLE:
-				this->mouse.middle_button = 2;
-				break;
-			}
+			input->update_button((MOUSEBUTTON)this->sdl_event.button.button, 2);
 			break;
 		case SDL_MOUSEBUTTONUP:
-			switch (this->sdl_event.button.button)
-			{
-			case SDL_BUTTON_LEFT:
-				this->mouse.left_button = 1;
-				break;
-			case SDL_BUTTON_RIGHT:
-				this->mouse.right_button = 1;
-				break;
-			case SDL_BUTTON_MIDDLE:
-				this->mouse.middle_button = 1;
-				break;
-			}
+			input->update_button((MOUSEBUTTON)this->sdl_event.button.button, 1);
+			break;
+		case SDL_MOUSEMOTION:
+			input->update_mouse_position(this->sdl_event.motion.x, this->sdl_event.motion.y);
 			break;
 		case SDL_QUIT:
 			return 0;
@@ -237,69 +187,6 @@ int Window::get_frame_rate_smooth()
 
 int Window::get_max_frame_rate() { return this->frame_rate_max; }
 void Window::set_max_frame_rate(int max) { this->frame_rate_max = max; }
-
-bool Window::get_key(KEYCODE key) { return (this->keys[key].state > 1); }
-bool Window::get_key_down(KEYCODE key) { return (this->keys[key].state == 2); }
-bool Window::get_key_up(KEYCODE key) { return (this->keys[key].state == 1); }
-
-bool Window::get_mouse_button(MOUSEBUTTON btn)
-{
-	switch (btn)
-	{
-	case MOUSEBUTTON::LEFT:
-		return (this->mouse.left_button > 1);
-	case MOUSEBUTTON::RIGHT:
-		return (this->mouse.right_button > 1);
-	case MOUSEBUTTON::MIDDLE:
-		return (this->mouse.middle_button > 1);
-	}
-	return false;
-}
-
-bool Window::get_mouse_button_down(MOUSEBUTTON btn)
-{
-	switch (btn)
-	{
-	case MOUSEBUTTON::LEFT:
-		return (this->mouse.left_button == 2);
-	case MOUSEBUTTON::RIGHT:
-		return (this->mouse.right_button == 2);
-	case MOUSEBUTTON::MIDDLE:
-		return (this->mouse.middle_button == 2);
-	}
-	return false;
-}
-
-bool Window::get_mouse_button_up(MOUSEBUTTON btn)
-{
-	switch (btn)
-	{
-	case MOUSEBUTTON::LEFT:
-		return (this->mouse.left_button == 1);
-	case MOUSEBUTTON::RIGHT:
-		return (this->mouse.right_button == 1);
-	case MOUSEBUTTON::MIDDLE:
-		return (this->mouse.middle_button == 1);
-	}
-	return false;
-}
-
-float Window::get_interpolated_keys(KEYCODE key1, KEYCODE key2) {
-	float temp = 0.0f;
-	temp += (this->get_key(key2));
-	temp -= (this->get_key(key1));
-	return temp;
-}
-
-float Window::get_interpolated_keys(MOUSEBUTTON btn1, MOUSEBUTTON btn2) {
-	float temp = 0.0f;
-	temp += (this->get_mouse_button(btn2));
-	temp -= (this->get_mouse_button(btn1));
-	return temp;
-}
-
-int Window::get_mouse_x() { return this->mouse.x_pos; }
-int Window::get_mouse_y() { return this->mouse.y_pos; }
 
 void Window::set_clear_colour(SDL_Color color) { glClearColor( color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f); }
 
@@ -697,53 +584,6 @@ void Window::text_make_textures(FT_Face face, char ch, GLuint list_base, GLuint*
 	glEndList();
 }
 
-void Window::key_init()
-{
-	KEYCODE* All = new KEYCODE[110] {
-		// NUMBERS
-		KEYCODE::ALPHA0, KEYCODE::ALPHA1, KEYCODE::ALPHA2, KEYCODE::ALPHA3, KEYCODE::ALPHA4,
-		KEYCODE::ALPHA5, KEYCODE::ALPHA6, KEYCODE::ALPHA7, KEYCODE::ALPHA8, KEYCODE::ALPHA9,
-
-		KEYCODE::A, KEYCODE::B, KEYCODE::C, KEYCODE::D, KEYCODE::E, KEYCODE::F, KEYCODE::G,
-		KEYCODE::H, KEYCODE::I, KEYCODE::J, KEYCODE::K, KEYCODE::L, KEYCODE::M, KEYCODE::N,
-		KEYCODE::O, KEYCODE::P, KEYCODE::Q, KEYCODE::R, KEYCODE::S, KEYCODE::T, KEYCODE::U,
-		KEYCODE::V, KEYCODE::W, KEYCODE::X, KEYCODE::Y, KEYCODE::Z,
-
-		KEYCODE::UP, KEYCODE::DOWN, KEYCODE::LEFT, KEYCODE::RIGHT,
-
-		// COMMANDS
-		KEYCODE::LALT, KEYCODE::LCRTL, KEYCODE::LSHIFT, KEYCODE::LCOMMAND,
-		KEYCODE::RALT, KEYCODE::RCRTL, KEYCODE::RSHIFT, KEYCODE::RCOMMAND,
-
-		KEYCODE::RETURN, KEYCODE::PAGEUP, KEYCODE::PAGEDOWN, KEYCODE::TAB,
-		KEYCODE::PRINTSCREEN, KEYCODE::INSERT, KEYCODE::HOME, KEYCODE::END,
-		KEYCODE::CAPSLOCK, KEYCODE::BACKSPACE, KEYCODE::DEL,
-
-		// SPECIALS
-		KEYCODE::QUOTE, KEYCODE::COMMA, KEYCODE::EQUALS, KEYCODE::LBRACKET,
-		KEYCODE::MINUS, KEYCODE::PERIOD, KEYCODE::RBRACKET, KEYCODE::SEMICOLON,
-		KEYCODE::FORWARDSLASH, KEYCODE::BACKSLASH, KEYCODE::AMPERSAND,
-		KEYCODE::ASTERISK, KEYCODE::AT, KEYCODE::CARET, KEYCODE::COLON,
-		KEYCODE::DOLLAR, KEYCODE::EXCLAIM, KEYCODE::GREATER, KEYCODE::HASH,
-		KEYCODE::LPAREN, KEYCODE::LESS, KEYCODE::PERCENT, KEYCODE::PLUS,
-		KEYCODE::QUESTION, KEYCODE::DQUOTE, KEYCODE::RPAREN, KEYCODE::UNDERSCORE,
-
-		// FUNCTIONS
-		KEYCODE::F1, KEYCODE::F2, KEYCODE::F3, KEYCODE::F4, KEYCODE::F5,
-		KEYCODE::F6, KEYCODE::F7, KEYCODE::F8, KEYCODE::F9, KEYCODE::F10,
-		KEYCODE::F11, KEYCODE::F12, KEYCODE::F13, KEYCODE::F14, KEYCODE::F15,
-		KEYCODE::F16, KEYCODE::F17, KEYCODE::F18, KEYCODE::F19, KEYCODE::F20,
-		KEYCODE::F21, KEYCODE::F22, KEYCODE::F23, KEYCODE::F24
-	};
-
-	key_event empty = {0};
-
-	for (int i = 0; i < 110; i++) {
-		this->keys.insert(std::pair<KEYCODE, key_event>(All[i], empty));
-	}
-
-	delete[] All;
-}
 
 font_data Window::text_init(std::string font, int size)
 {

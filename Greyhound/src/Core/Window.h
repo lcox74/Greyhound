@@ -6,6 +6,7 @@
 #include <math.h>
 #include <vector>
 #include <numeric>
+#include <initializer_list>
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
@@ -31,66 +32,12 @@
 #include "Asserts.h"
 #include "Shader.h"
 
+#include "GH_Input.h"
+
 struct font_data {
 	float height;
 	std::vector<GLuint> textures;
 	GLuint list_base;
-};
-
-struct key_event {
-	Uint8 state = 0;
-};
-
-struct mouse_event {
-	Uint8 left_button = 0;
-	Uint8 right_button = 0;
-	Uint8 middle_button = 0;
-
-	int x_pos = 0, y_pos = 0;
-};
-
-enum class KEYCODE {
-	// NUMBERS
-	ALPHA0 = SDLK_0, ALPHA1 = SDLK_1, ALPHA2 = SDLK_2, ALPHA3 = SDLK_3, ALPHA4 = SDLK_4,
-	ALPHA5 = SDLK_5, ALPHA6 = SDLK_6, ALPHA7 = SDLK_7, ALPHA8 = SDLK_8, ALPHA9 = SDLK_9,
-
-	// ALPHABET
-	A = SDLK_a, B = SDLK_b, C = SDLK_c, D = SDLK_d, E = SDLK_e, F = SDLK_f, G = SDLK_g,
-	H = SDLK_h, I = SDLK_i, J = SDLK_j, K = SDLK_k, L = SDLK_l, M = SDLK_m, N = SDLK_n,
-	O = SDLK_o, P = SDLK_p, Q = SDLK_q, R = SDLK_r, S = SDLK_s, T = SDLK_t, U = SDLK_u,
-	V = SDLK_v, W = SDLK_w, X = SDLK_x, Y = SDLK_y, Z = SDLK_z,
-
-	// ARROWS
-	UP = SDLK_UP, DOWN = SDLK_DOWN, LEFT = SDLK_LEFT, RIGHT = SDLK_RIGHT,
-
-	// COMMANDS
-	LALT = SDLK_LALT, LCRTL = SDLK_LCTRL, LSHIFT = SDLK_LSHIFT, LCOMMAND = SDLK_LGUI,
-	RALT = SDLK_RALT, RCRTL = SDLK_RCTRL, RSHIFT = SDLK_RSHIFT, RCOMMAND = SDLK_RGUI,
-
-	RETURN = SDLK_RETURN, PAGEUP = SDLK_PAGEUP, PAGEDOWN = SDLK_PAGEDOWN, TAB = SDLK_TAB,
-	PRINTSCREEN = SDLK_PRINTSCREEN, INSERT = SDLK_INSERT, HOME = SDLK_HOME, END = SDLK_END,
-	CAPSLOCK = SDLK_CAPSLOCK, BACKSPACE = SDLK_BACKSPACE, DEL = SDLK_DELETE,
-
-	// SPECIALS
-	QUOTE = SDLK_QUOTE, COMMA = SDLK_COMMA, EQUALS = SDLK_EQUALS, LBRACKET = SDLK_LEFTBRACKET,
-	MINUS = SDLK_MINUS, PERIOD = SDLK_PERIOD, RBRACKET = SDLK_RIGHTBRACKET, SEMICOLON = SDLK_SEMICOLON,
-	FORWARDSLASH = SDLK_SLASH, BACKSLASH = SDLK_BACKSLASH, AMPERSAND = SDLK_AMPERSAND,
-	ASTERISK = SDLK_ASTERISK, AT = SDLK_AT, CARET = SDLK_CARET, COLON = SDLK_COLON,
-	DOLLAR = SDLK_DOLLAR, EXCLAIM = SDLK_EXCLAIM, GREATER = SDLK_GREATER, HASH = SDLK_HASH,
-	LPAREN = SDLK_LEFTPAREN, LESS = SDLK_LESS, PERCENT = SDLK_PERCENT, PLUS = SDLK_PLUS,
-	QUESTION = SDLK_QUESTION, DQUOTE = SDLK_QUOTEDBL, RPAREN = SDLK_RIGHTPAREN, UNDERSCORE = SDLK_UNDERSCORE,
-
-	// FUNCTIONS
-	F1 = SDLK_F1, F2 = SDLK_F2, F3 = SDLK_F3, F4 = SDLK_F4, F5 = SDLK_F5, F6 = SDLK_F6, F7 = SDLK_F7, 
-	F8 = SDLK_F8, F9 = SDLK_F9, F10 = SDLK_F10, F11 = SDLK_F11, F12 = SDLK_F12, F13 = SDLK_F13,
-	F14 = SDLK_F14, F15 = SDLK_F15, F16 = SDLK_F16, F17 = SDLK_F17, F18 = SDLK_F18, F19 = SDLK_F19, F20 = SDLK_F20,
-	F21 = SDLK_F21, F22 = SDLK_F22, F23 = SDLK_F23, F24 = SDLK_F24
-};
-
-enum class MOUSEBUTTON {
-	LEFT,
-	MIDDLE,
-	RIGHT
 };
 
 class Window
@@ -101,7 +48,7 @@ public:
 
 	virtual void Update() = 0;
 
-	int width, height;
+	int width = 0, height = 0;
 	std::string name;
 	bool bfullscreen;
 
@@ -116,6 +63,8 @@ public:
 	FT_Library ft;
 	FT_Face face;
 
+	GH_Input* input;
+
 	float get_delta_time();
 	float get_delta_time_smooth();
 
@@ -124,23 +73,6 @@ public:
 
 	int get_max_frame_rate();
 	void set_max_frame_rate(int max);
-
-public: // Key Events
-	bool get_key(KEYCODE key); // If Key is Down + Held
-	bool get_key_down(KEYCODE key); // If Key Just Pressed
-	bool get_key_up(KEYCODE key); // If Key Just Released
-	
-	bool get_mouse_button(MOUSEBUTTON btn); // If Btn is Down + Held
-	bool get_mouse_button_down(MOUSEBUTTON btn); // If Btn Just Pressed
-	bool get_mouse_button_up(MOUSEBUTTON btn); // If Btn Just Released
-
-	// Interpolate between -1 to 1 depending on key1 and key2 press state
-	float get_interpolated_keys(KEYCODE key1, KEYCODE key2);
-	float get_interpolated_keys(MOUSEBUTTON btn1, MOUSEBUTTON btn2);
-
-	// Returns mouse coords on screen
-	int get_mouse_x();
-	int get_mouse_y();
 
 public: // Draw Calls
 
@@ -170,13 +102,8 @@ public: // Draw Calls
 private:
 	std::map<const char*, font_data> fonts;
 
-	std::map<KEYCODE, key_event> keys;
-	struct::mouse_event mouse;
-
 	font_data text_init(std::string font, int size);
 	void text_make_textures(FT_Face face, char ch, GLuint list_base, GLuint* tex_base);
-
-	void key_init();
 
 	void draw_shape(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount, int drawMode = GL_TRIANGLES);
 

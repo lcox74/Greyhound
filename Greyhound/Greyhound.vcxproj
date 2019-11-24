@@ -155,7 +155,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Greyhound.cpp" />
-    <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\Core\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\GLEW\include\GL\eglew.h" />
@@ -321,10 +321,11 @@
     <ClInclude Include="dependencies\SDL2\include\SDL_version.h" />
     <ClInclude Include="dependencies\SDL2\include\SDL_video.h" />
     <ClInclude Include="dependencies\SDL2\include\SDL_vulkan.h" />
-    <ClInclude Include="src\Asserts.h" />
+    <ClInclude Include="src\Core\Asserts.h" />
+    <ClInclude Include="src\Core\GH_Input.h" />
     <ClInclude Include="src\GameView.h" />
-    <ClInclude Include="src\Shader.h" />
-    <ClInclude Include="src\Window.h" />
+    <ClInclude Include="src\Core\Shader.h" />
+    <ClInclude Include="src\Core\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="dependencies\GLEW\lib\Release\Win32\glew32.lib" />
