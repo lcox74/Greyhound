@@ -4,8 +4,6 @@
 #include <map>
 #include <memory>
 
-//#include <SDL.h>
-
 #include <glm/glm.hpp>
 
 enum class KEYCODE {

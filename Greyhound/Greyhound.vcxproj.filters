@@ -527,6 +527,9 @@
     <ClInclude Include="src\Core\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GH_Graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="dependencies\GLEW\lib\Release\Win32\glew32.lib" />

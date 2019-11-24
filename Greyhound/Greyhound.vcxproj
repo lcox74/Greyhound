@@ -323,6 +323,7 @@
     <ClInclude Include="dependencies\SDL2\include\SDL_vulkan.h" />
     <ClInclude Include="src\Core\Asserts.h" />
     <ClInclude Include="src\Core\GH_Input.h" />
+    <ClInclude Include="src\Core\GH_Graphics.h" />
     <ClInclude Include="src\GameView.h" />
     <ClInclude Include="src\Core\Shader.h" />
     <ClInclude Include="src\Core\Window.h" />

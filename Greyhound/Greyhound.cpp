@@ -5,7 +5,7 @@
 
 int main()
 {
-	auto* win = new GameView("Test Window");
+	GameView* win = new GameView("Test Window", false);
 
 	while (win->window_loop()) { }
 
