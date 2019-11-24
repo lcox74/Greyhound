@@ -568,8 +568,6 @@
     <None Include="res\shaders\shape.vs" />
     <None Include="res\shaders\text.fs" />
     <None Include="res\shaders\text.vs" />
-    <None Include="res\shaders\circle.fs" />
-    <None Include="res\shaders\circle.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="dependencies\SDL2\bin\LICENSE.freetype.txt" />

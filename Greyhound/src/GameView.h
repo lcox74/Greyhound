@@ -23,7 +23,17 @@ public:
 
 	void Update()
 	{
-		this->draw_filled_rect(x, y, 50, 50, { 40, 100, 200 });
+		temp += this->get_delta_time();
+
+		r = std::abs(std::sin(temp) * 25);
+
+		//if (this->r < 0) this->r = 0;
+		//if (this->r > 25) this->r = 25;
+
+		this->draw_rounded_rect(x, y, 50, 50, this->r, { 40, 100, 200 });
+		this->draw_rounded_rect(400, 200, 100, 50, this->r, { 40, 200, 100 });
+
+		this->r = r + get_interpolated_keys(KEYCODE::Q, KEYCODE::E) * speed * this->get_delta_time();
 
 		this->draw_text("MOUSE:\n    X = " + std::to_string(this->get_mouse_x()) + 
 							  "\n    Y = " + std::to_string(this->get_mouse_y()) +
@@ -62,24 +72,22 @@ public:
 		int horizontal = get_interpolated_keys(KEYCODE::A, KEYCODE::D);
 		int vertical = get_interpolated_keys(KEYCODE::W, KEYCODE::S);
 
-		float newX = horizontal;
-		float newY = vertical;
+		float newX = (float)horizontal;
+		float newY = (float)vertical;
 
 		if (horizontal != 0 && vertical != 0) {
 			newX /= std::sqrtf(2);
 			newY /= std::sqrtf(2);
 		}
 
-		x += speed * 1 / 60 * newX;
-		y += speed * 1 / 60 * newY;
+		x += speed * this->get_delta_time() * newX;
+		y += speed * this->get_delta_time() * newY;
 
 
 		this->draw_line(600, 420, 600 + (35 * newX), 420 + (35 * newY), { 255, 255, 30 }, 2);
 
 		this->draw_filled_circle(600, 420, 3, { 100, 100, 100 });
 		this->draw_circle(600, 420, 35, { 100, 100, 100 });
-
-
 	}
 
 	int get_interpolated_keys(KEYCODE key1, KEYCODE key2) {
@@ -90,7 +98,8 @@ public:
 	}
 
 	bool first;
-	float x = 250, y = 100;
-	float speed = 90;
+	float x = 250, y = 100, r = 5;
+	float speed = 60;
+	float temp = 0;
 };
 

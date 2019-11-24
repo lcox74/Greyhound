@@ -365,8 +365,6 @@
     <None Include="res\Fonts\OpenSans\OpenSansLight.ttf.meta" />
     <None Include="res\Fonts\OpenSans\OpenSansRegular.ttf.meta" />
     <None Include="res\Fonts\OpenSans\OpenSansSemibold.ttf.meta" />
-    <None Include="res\shaders\circle.fs" />
-    <None Include="res\shaders\circle.vs" />
     <None Include="res\shaders\shape.fs" />
     <None Include="res\shaders\shape.vs" />
     <None Include="res\shaders\text.fs" />

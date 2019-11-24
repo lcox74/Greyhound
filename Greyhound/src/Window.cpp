@@ -49,7 +49,6 @@ void Window::init(std::string name, int width, int height, bool bfullscreen)
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	shapeShader = new Shader("res\\shaders\\shape.vs", "res\\shaders\\shape.fs");
-	circleShader = new Shader("res\\shaders\\circle.vs", "res\\shaders\\circle.fs");
 	textShader = new Shader("res\\shaders\\text.vs", "res\\shaders\\text.fs");
 
 	// Init keycodes
@@ -73,6 +72,10 @@ void Window::init(std::string name, int width, int height, bool bfullscreen)
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	// Fill frame list to fix initial smoothing
+	this->frame_list = std::vector<double>(this->frame_smooth);
+	std::fill(this->frame_list.begin(), this->frame_list.end(), 1 / this->frame_rate_max);
 }
 
 int Window::window_loop()
@@ -169,7 +172,7 @@ int Window::window_loop()
 	this->delta_time = (double)(1.0 / (this->frame_now - this->frame_last));
 	this->frame_list.push_back(this->delta_time);
 
-	if (this->frame_list.size() >= this->frame_smooth) 
+	if (this->frame_list.size() >= (unsigned)this->frame_smooth) 
 	{
 		this->frame_list.erase(this->frame_list.begin());
 		this->frame_list.pop_back();
@@ -178,114 +181,32 @@ int Window::window_loop()
 	return 1;
 }
 
-void Window::basic_filled_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount)
-{
-
-	glGenVertexArrays(1, &this->VAO);
-	glGenBuffers(1, &this->VBO);
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	glBindVertexArray(this->VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_DYNAMIC_DRAW);
-
-	//Create IBO
-	glGenBuffers(1, &this->IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_DYNAMIC_DRAW);
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glDrawElements(GL_TRIANGLES, indeCount, GL_UNSIGNED_INT, NULL);
-
-	glDeleteBuffers(1, &IBO);
-	glDeleteBuffers(1, &VBO);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-
-	glDeleteVertexArrays(1, &this->VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-void Window::basic_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount)
-{
-	glGenVertexArrays(1, &this->VAO);
-	glGenBuffers(1, &this->VBO);
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	glBindVertexArray(this->VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_DYNAMIC_DRAW);
-
-	//Create IBO
-	glGenBuffers(1, &this->IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_DYNAMIC_DRAW);
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glDrawElements(GL_LINE_LOOP, indeCount, GL_UNSIGNED_INT, NULL);
-
-	glDeleteBuffers(1, &IBO);
-	glDeleteBuffers(1, &VBO);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-
-	glDeleteVertexArrays(1, &this->VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-void Window::circle_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount)
+void Window::draw_shape(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount, int drawMode)
 {
 	glGenVertexArrays(1, &this->VAO);
 	glGenBuffers(1, &this->VBO);
 	glBindVertexArray(this->VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_STATIC_DRAW);
 
 	//Create IBO
 	glGenBuffers(1, &this->IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_STATIC_DRAW);
 
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	// radius attribute
-	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 1 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, NULL);
-	
+	glDrawElements(drawMode, indeCount, GL_UNSIGNED_INT, NULL);
+
 	glDeleteBuffers(1, &IBO);
 	glDeleteBuffers(1, &VBO);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
 
 	glDeleteVertexArrays(1, &this->VAO);
 
@@ -363,10 +284,83 @@ bool Window::get_mouse_button_up(MOUSEBUTTON btn)
 	return false;
 }
 
+float Window::get_interpolated_keys(KEYCODE key1, KEYCODE key2) {
+	float temp = 0.0f;
+	temp += (this->get_key(key2));
+	temp -= (this->get_key(key1));
+	return temp;
+}
+
+float Window::get_interpolated_keys(MOUSEBUTTON btn1, MOUSEBUTTON btn2) {
+	float temp = 0.0f;
+	temp += (this->get_mouse_button(btn2));
+	temp -= (this->get_mouse_button(btn1));
+	return temp;
+}
+
 int Window::get_mouse_x() { return this->mouse.x_pos; }
 int Window::get_mouse_y() { return this->mouse.y_pos; }
 
 void Window::set_clear_colour(SDL_Color color) { glClearColor( color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f); }
+
+void Window::draw_rounded_rect(float x, float y, float w, float h, float r, SDL_Color color)
+{
+	// Radius Limits
+	float maxRadius = std::fminf(w, h);
+	if (r > maxRadius) r = maxRadius;
+	if (r < 0) r = 0;
+
+	float x1 = get_relative_x(x);
+	float y1 = get_relative_y(y);
+	float x2 = get_relative_x(x + w);
+	float y2 = get_relative_y(y + h);
+
+	float ix1 = get_relative_x(x + r);
+	float iy1 = get_relative_y(y + r);
+	float ix2 = get_relative_x(x + w - r);
+	float iy2 = get_relative_y(y + h - r);
+
+	GLfloat* vertices = new GLfloat[24]{
+		ix1, y1,    // 0
+		ix2, y1,	// 1
+		x1, iy1,	// 2
+		ix1, iy1,	// 3
+		ix2, iy1,	// 4
+		x2, iy1,	// 5
+		x1, iy2,	// 6
+		ix1, iy2,	// 7
+		ix2, iy2,	// 8
+		x2, iy2,	// 9
+		ix1, y2,	// 10
+		ix2, y2		// 11
+	};
+
+	GLuint* indexData = new GLuint[30] { 
+		4, 1, 0,
+		4, 0, 3,
+		7, 3, 2,
+		2, 6, 7,
+		8, 4, 3,
+		3, 7, 8,
+		4, 8, 9,
+		9, 5, 4,
+		11, 8, 7,
+		11, 7, 10
+	};
+
+	this->shapeShader->bind();
+	this->shapeShader->setColor("aColor", color);
+	this->draw_shape(vertices, 24, indexData, 30);
+	this->shapeShader->unbind();
+
+	this->draw_filled_circle(x + r, y + r, r, color);
+	this->draw_filled_circle(x + r, y + h - r, r, color);
+	this->draw_filled_circle(x + w - r, y + r, r, color);
+	this->draw_filled_circle(x + w - r, y + h - r, r, color);
+
+	delete[] vertices;
+	delete[] indexData;
+}
 
 void Window::draw_filled_rect(float x, float y, float w, float h, SDL_Color color)
 {
@@ -375,19 +369,19 @@ void Window::draw_filled_rect(float x, float y, float w, float h, SDL_Color colo
 	float x2 = get_relative_x(x + w);
 	float y2 = get_relative_y(y + h);
 
-	GLfloat* vertices = new GLfloat[24] {
-		// positions                         // colors
-		x1, y1, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		x1, y2, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		x2, y2, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		x2, y1, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
+	GLfloat* vertices = new GLfloat[8] {
+		x1, y1,
+		x1, y2,
+		x2, y2,
+		x2, y1
 	};
 
 	GLuint* indexData = new GLuint[6] { 0, 1, 2,
 										3, 0, 2 };
 
 	this->shapeShader->bind();
-	this->basic_filled_shape_shader(vertices, 24, indexData, 6);
+	this->shapeShader->setColor("aColor", color);
+	this->draw_shape(vertices, 8, indexData, 6);
 	this->shapeShader->unbind();
 
 	delete[] vertices;
@@ -418,19 +412,19 @@ void Window::draw_filled_quad(float x1, float y1, float x2, float y2, SDL_Color 
 	float xb = get_relative_x(x2);
 	float yb = get_relative_y(y2);
 
-	GLfloat* vertices = new GLfloat[24] {
-		// positions                         // colors
-		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xa, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xb, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
+	GLfloat* vertices = new GLfloat[8] {
+		xa, ya,
+		xa, yb,
+		xb, yb,
+		xb, ya
 	};
 
 	GLuint* indexData = new GLuint[6]{ 0, 1, 2,
 									   3, 0, 2 };
 
 	this->shapeShader->bind();
-	this->basic_filled_shape_shader(vertices, 24, indexData, 6);
+	this->shapeShader->setColor("aColor", color);
+	this->draw_shape(vertices, 8, indexData, 6);
 	this->shapeShader->unbind();
 
 	delete[] vertices;
@@ -448,19 +442,19 @@ void Window::draw_filled_quad(float x1, float y1, float x2, float y2, float x3, 
 	float xd = get_relative_x(x4);
 	float yd = get_relative_y(y4);
 
-	GLfloat* vertices = new GLfloat[24] {
-		// positions                         // colors
-		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xc, yc, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xd, yd, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
+	GLfloat* vertices = new GLfloat[8] {
+		xa, ya,
+		xb, yb,
+		xc, yc,
+		xd, yd
 	};
 
 	GLuint* indexData = new GLuint[6] { 0, 1, 2,
 										2, 3, 0 };
 
 	this->shapeShader->bind();
-	this->basic_filled_shape_shader(vertices, 24, indexData, 6);
+	this->shapeShader->setColor("aColor", color);
+	this->draw_shape(vertices, 8, indexData, 6);
 	this->shapeShader->unbind();
 
 	delete[] vertices;
@@ -474,19 +468,19 @@ void Window::draw_quad(float x1, float y1, float x2, float y2, SDL_Color color)
 	float xb = get_relative_x(x2);
 	float yb = get_relative_y(y2);
 
-	GLfloat* vertices = new GLfloat[24]{
-		// positions                         // colors
-		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xa, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xb, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
+	GLfloat* vertices = new GLfloat[8]{
+		xa, ya,
+		xa, yb,
+		xb, yb,
+		xb, ya
 	};
 
 	GLuint* indexData = new GLuint[6] { 0, 1, 2,
 										3, 0, 2 };
 
 	this->shapeShader->bind();
-	this->basic_shape_shader(vertices, 24, indexData, 6);
+	this->shapeShader->setColor("aColor", color);
+	this->draw_shape(vertices, 8, indexData, 6, GL_LINE_LOOP);
 	this->shapeShader->unbind();
 
 	delete[] vertices;
@@ -504,19 +498,19 @@ void Window::draw_quad(float x1, float y1, float x2, float y2, float x3, float y
 	float xd = get_relative_x(x4);
 	float yd = get_relative_y(y4);
 
-	GLfloat* vertices = new GLfloat[24] {
-		// positions                         // colors
-		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xc, yc, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xd, yd, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f
+	GLfloat* vertices = new GLfloat[8] {
+		xa, ya,
+		xb, yb,
+		xc, yc,
+		xd, yd
 	};
 
 	GLuint* indexData = new GLuint[6] { 0, 1, 2,
 									2, 3, 0 };
 
 	this->shapeShader->bind();
-	this->basic_shape_shader(vertices, 24, indexData, 6);
+	this->shapeShader->setColor("aColor", color);
+	this->draw_shape(vertices, 8, indexData, 6, GL_LINE_LOOP);
 	this->shapeShader->unbind();
 
 	delete[] vertices;
@@ -532,7 +526,7 @@ void Window::draw_filled_circle(float x, float y, float r, SDL_Color color)
 	float radiusy = r * 2.0f / this->height;
 
 	const int steps = 100;
-	const float angle = 3.1415926f * 2.0f / steps;
+	const float angle = 3.1415926f * 2 / steps;
 
 	float prevX = x1;
 	float prevY = y1 + radiusy;
@@ -595,17 +589,17 @@ void Window::draw_filled_triangle(float x1, float y1, float x2, float y2, float 
 	float xc = get_relative_x(x3);
 	float yc = get_relative_y(y3);
 
-	GLfloat* vertices = new GLfloat[18] {
-		// positions                         // colors
-		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xc, yc, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+	GLfloat* vertices = new GLfloat[6] {
+		xa, ya,
+		xb, yb,
+		xc, yc
 	};
 
 	GLuint* indexData = new GLuint[3] { 0, 1, 2 };
 
 	this->shapeShader->bind();
-	this->basic_filled_shape_shader(vertices, 18, indexData, 3);
+	this->shapeShader->setColor("aColor", color);
+	this->draw_shape(vertices, 6, indexData, 3);
 	this->shapeShader->unbind();
 
 	delete[] vertices;
@@ -621,17 +615,17 @@ void Window::draw_triangle(float x1, float y1, float x2, float y2, float x3, flo
 	float xc = get_relative_x(x3);
 	float yc = get_relative_y(y3);
 
-	GLfloat* vertices = new GLfloat[18] {
-		// positions                         // colors
-		xa, ya, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xb, yb, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-		xc, yc, 0.0f,  color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+	GLfloat* vertices = new GLfloat[6] {
+		xa, ya,
+		xb, yb,
+		xc, yc
 	};
 
 	GLuint* indexData = new GLuint[3] { 0, 1, 2 };
 
 	this->shapeShader->bind();
-	this->basic_shape_shader(vertices, 18, indexData, 3);
+	this->shapeShader->setColor("aColor", color);
+	this->draw_shape(vertices, 6, indexData, 3, GL_LINE_LOOP);
 	this->shapeShader->unbind();
 
 	delete[] vertices;

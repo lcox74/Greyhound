@@ -129,11 +129,16 @@ public: // Key Events
 	bool get_key(KEYCODE key); // If Key is Down + Held
 	bool get_key_down(KEYCODE key); // If Key Just Pressed
 	bool get_key_up(KEYCODE key); // If Key Just Released
+	
+	bool get_mouse_button(MOUSEBUTTON btn); // If Btn is Down + Held
+	bool get_mouse_button_down(MOUSEBUTTON btn); // If Btn Just Pressed
+	bool get_mouse_button_up(MOUSEBUTTON btn); // If Btn Just Released
 
-	bool get_mouse_button(MOUSEBUTTON btn);
-	bool get_mouse_button_down(MOUSEBUTTON btn);
-	bool get_mouse_button_up(MOUSEBUTTON btn);
+	// Interpolate between -1 to 1 depending on key1 and key2 press state
+	float get_interpolated_keys(KEYCODE key1, KEYCODE key2);
+	float get_interpolated_keys(MOUSEBUTTON btn1, MOUSEBUTTON btn2);
 
+	// Returns mouse coords on screen
 	int get_mouse_x();
 	int get_mouse_y();
 
@@ -141,6 +146,7 @@ public: // Draw Calls
 
 	void set_clear_colour(SDL_Color color);
 
+	void draw_rounded_rect(float x, float y, float w, float h, float r, SDL_Color color);
 	void draw_filled_rect(float x, float y, float w, float h, SDL_Color color);
 	void draw_rect(float x, float y, float w, float h, SDL_Color color);
 
@@ -172,9 +178,7 @@ private:
 
 	void key_init();
 
-	void basic_filled_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount);
-	void basic_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount);
-	void circle_shape_shader(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount);
+	void draw_shape(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount, int drawMode = GL_TRIANGLES);
 
 	Shader* shapeShader = nullptr;
 	Shader* circleShader = nullptr;
