@@ -18,7 +18,7 @@
     <ClCompile Include="Greyhound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\Window.cpp">
+    <ClCompile Include="src\Core\GH_Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -518,9 +518,6 @@
     <ClInclude Include="src\Core\GH_Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\Asserts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -528,6 +525,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GH_Graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\UI\GH_UI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\UI\GH_UI_Element.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\UI\GH_BUTTON.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GH_Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

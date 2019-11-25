@@ -26,7 +26,7 @@ enum class KEYCODE {
 
 	RETURN = SDLK_RETURN, PAGEUP = SDLK_PAGEUP, PAGEDOWN = SDLK_PAGEDOWN, TAB = SDLK_TAB,
 	PRINTSCREEN = SDLK_PRINTSCREEN, INSERT = SDLK_INSERT, HOME = SDLK_HOME, END = SDLK_END,
-	CAPSLOCK = SDLK_CAPSLOCK, BACKSPACE = SDLK_BACKSPACE, DEL = SDLK_DELETE,
+	CAPSLOCK = SDLK_CAPSLOCK, BACKSPACE = SDLK_BACKSPACE, DEL = SDLK_DELETE, SPACE = SDLK_SPACE,
 
 	// SPECIALS
 	QUOTE = SDLK_QUOTE, COMMA = SDLK_COMMA, EQUALS = SDLK_EQUALS, LBRACKET = SDLK_LEFTBRACKET,
@@ -50,11 +50,11 @@ enum class MOUSEBUTTON {
 	RIGHT = SDL_BUTTON_RIGHT
 };
 
-class GH_Input {
-	struct key_event {
-		Uint8 state = 0;
-	};
+struct key_event {
+	Uint8 state = 0;
+};
 
+class GH_Input {
 	std::map<KEYCODE, key_event> key_states;
 	std::map<MOUSEBUTTON, key_event> mouse_states;
 	
@@ -62,7 +62,7 @@ class GH_Input {
 
 public:
 	GH_Input() {
-		KEYCODE* all_keys = new KEYCODE[110]{
+		KEYCODE* all_keys = new KEYCODE[111]{
 			// NUMBERS
 			KEYCODE::ALPHA0, KEYCODE::ALPHA1, KEYCODE::ALPHA2, KEYCODE::ALPHA3, KEYCODE::ALPHA4,
 			KEYCODE::ALPHA5, KEYCODE::ALPHA6, KEYCODE::ALPHA7, KEYCODE::ALPHA8, KEYCODE::ALPHA9,
@@ -80,7 +80,7 @@ public:
 
 			KEYCODE::RETURN, KEYCODE::PAGEUP, KEYCODE::PAGEDOWN, KEYCODE::TAB,
 			KEYCODE::PRINTSCREEN, KEYCODE::INSERT, KEYCODE::HOME, KEYCODE::END,
-			KEYCODE::CAPSLOCK, KEYCODE::BACKSPACE, KEYCODE::DEL,
+			KEYCODE::CAPSLOCK, KEYCODE::BACKSPACE, KEYCODE::DEL, KEYCODE::SPACE,
 
 			// SPECIALS
 			KEYCODE::QUOTE, KEYCODE::COMMA, KEYCODE::EQUALS, KEYCODE::LBRACKET,
@@ -221,4 +221,7 @@ public:
 	int get_mouse_x() { return (int)this->mouse_position.x; }
 	int get_mouse_y() { return (int)this->mouse_position.y; }
 	glm::vec2 get_mouse() { return this->mouse_position; }
+
+	std::map<KEYCODE, key_event> getKeyEvents() { return key_states; }
+	std::map<MOUSEBUTTON, key_event> getMouseEvents() { return mouse_states; }
 };

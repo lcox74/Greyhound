@@ -155,7 +155,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Greyhound.cpp" />
-    <ClCompile Include="src\Core\Window.cpp" />
+    <ClCompile Include="src\Core\GH_Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\GLEW\include\GL\eglew.h" />
@@ -324,9 +324,12 @@
     <ClInclude Include="src\Core\Asserts.h" />
     <ClInclude Include="src\Core\GH_Input.h" />
     <ClInclude Include="src\Core\GH_Graphics.h" />
+    <ClInclude Include="src\Core\UI\GH_BUTTON.h" />
+    <ClInclude Include="src\Core\UI\GH_UI.h" />
+    <ClInclude Include="src\Core\UI\GH_UI_Element.h" />
     <ClInclude Include="src\GameView.h" />
     <ClInclude Include="src\Core\Shader.h" />
-    <ClInclude Include="src\Core\Window.h" />
+    <ClInclude Include="src\Core\GH_Window.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="dependencies\GLEW\lib\Release\Win32\glew32.lib" />

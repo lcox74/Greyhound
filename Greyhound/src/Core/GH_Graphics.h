@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GH_GRAPHICS_H_
+#define GH_GRAPHICS_H_
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
@@ -6,6 +7,8 @@
 #include <freetype/ftoutln.h>
 #include <freetype/fttrigon.h>
 #include FT_FREETYPE_H 
+
+#include "Shader.h"
 
 class GH_Graphics
 {
@@ -16,10 +19,6 @@ public:
 		this->height = h; 
 		this->shapeShader = new Shader("res\\shaders\\shape.vs", "res\\shaders\\shape.fs");
 		this->textShader = new Shader("res\\shaders\\text.vs", "res\\shaders\\text.fs");
-
-		this->face = NULL;
-		this->ft = NULL;
-		
 	}
 	~GH_Graphics() 
 	{
@@ -402,7 +401,7 @@ public:
 		delete[] indexData;
 	}
 
-	void draw_text(std::string text, float x, float y, int size, SDL_Color color, std::string fontfamily = "res\\Fonts\\OpenSans\\OpenSansRegular.ttf", float linespace = 1.15f)
+	void draw_text(std::string text, float x, float y, int size, SDL_Color color, std::string fontfamily = "res\\Fonts\\OpenSans\\OpenSansRegular.ttf", float linespace = 1.55f)
 	{
 		font_data temp = text_init(fontfamily, size);
 		glColor3f((float)color.r / 255.0f, (float)color.g / 255.0f, (float)color.b / 255.0f);
@@ -522,6 +521,7 @@ private:
 	FT_Face face;
 
 	std::map<const char*, font_data> fonts;
+	std::vector<std::string> keys;
 
 	Shader* shapeShader = nullptr;
 	Shader* textShader = nullptr;
@@ -530,12 +530,16 @@ private:
 
 	font_data text_init(std::string font, int size)
 	{
+		if (std::to_string(size) == "") return font_data();
+
 		std::string key = font + ":" + std::to_string(size);
-		std::map<const char*, font_data>::iterator it = fonts.find(key.c_str());
-		if (it != fonts.end()) {
-			return fonts[key.c_str()];
+		std::map<const char*, font_data>::iterator it;
+		for (it = this->fonts.begin(); it != this->fonts.end(); it++) {
+			if (it->first == key.c_str())
+				return this->fonts[key.c_str()];
 		}
 
+		std::cout << "In" << std::endl;
 		font_data newFont;
 		newFont.textures.resize(128);
 		newFont.height = (float)size;
@@ -555,7 +559,7 @@ private:
 			text_make_textures(face, i, newFont.list_base, &newFont.textures.front());
 		}
 
-		fonts.insert(std::pair<const char*, font_data>(key.c_str(), newFont));
+		this->fonts.insert(std::pair<const char*, font_data>(key.c_str(), newFont));
 
 		FT_Done_Face(face);
 		FT_Done_FreeType(library);
@@ -627,3 +631,5 @@ private:
 		glEndList();
 	}
 };
+
+#endif

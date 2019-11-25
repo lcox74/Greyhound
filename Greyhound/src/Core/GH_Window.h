@@ -9,7 +9,15 @@
 #include <initializer_list>
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 #undef main
+
+#include <ft2build.h>
+#include <freetype/freetype.h>
+#include <freetype/ftglyph.h>
+#include <freetype/ftoutln.h>
+#include <freetype/fttrigon.h>
+#include FT_FREETYPE_H 
 
 // OpenGL Headers
 #include <windows.h>
@@ -26,9 +34,9 @@
 
 #include "GH_Graphics.h"
 #include "GH_Input.h"
+#include "UI/GH_UI.h"
 
-
-class Window
+class GH_Window
 {
 public:
 
@@ -53,6 +61,7 @@ public:
 
 	GH_Graphics* graphics;
 	GH_Input* input;
+	GH_UI* ui;
 
 	void set_window_borderless();
 	void set_window_bordered();
@@ -65,6 +74,8 @@ public:
 
 	int get_max_frame_rate();
 	void set_max_frame_rate(int max);
+
+	void toggle_pause_window() { this->pause_window = !this->pause_window; }
 	
 private:
 	std::vector<double> frame_list = std::vector<double>();
@@ -73,5 +84,6 @@ private:
 	Uint32 frame_last = 0;
 	double delta_time = 0;
 	int frame_rate_max = 60;
+	bool pause_window = false;
 };
 

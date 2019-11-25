@@ -1,7 +1,7 @@
-#include "Window.h"
+#include "GH_Window.h"
 
 
-void Window::init(std::string name, int width, int height, bool bfullscreen)
+void GH_Window::init(std::string name, int width, int height, bool bfullscreen)
 {
 	this->name = name;
 	this->width = width;
@@ -33,7 +33,7 @@ void Window::init(std::string name, int width, int height, bool bfullscreen)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Create SDL Window
+	// Create SDL GH_Window
 	this->sdl_window = SDL_CreateWindow(this->name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->width, this->height, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN | ((this->bfullscreen) ? SDL_WINDOW_FULLSCREEN : 0));
 	FATAL_ASSERT_MESS((this->sdl_window != NULL), SDL_GetError());
 
@@ -48,8 +48,9 @@ void Window::init(std::string name, int width, int height, bool bfullscreen)
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-	graphics = new GH_Graphics(this->width, this->height);
-	input = new GH_Input();
+	this->graphics = new GH_Graphics(this->width, this->height);
+	this->input = new GH_Input();
+	this->ui = new GH_UI(this->graphics, this->input);
 
 	// Define the viewport dimensions
 	glViewport(0, 0, this->width, this->height);
@@ -75,7 +76,7 @@ void Window::init(std::string name, int width, int height, bool bfullscreen)
 	std::fill(this->frame_list.begin(), this->frame_list.end(), 1 / this->frame_rate_max);
 }
 
-int Window::window_loop()
+int GH_Window::window_loop()
 {
 	this->frame_last = this->frame_now;
 	this->frame_now = SDL_GetTicks();
@@ -107,15 +108,21 @@ int Window::window_loop()
 		}
 	}
 
-	// Clear window
+	// Clear GH_Window
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	// Render window
+	// Render GH_Window
 	this->Update();
 
-	// Swap buffers to display to window
-	glFlush();
-	SDL_GL_SwapWindow(this->sdl_window);
+	// Display UI
+	this->ui->update();
+
+	// Swap buffers to display to GH_Window
+	if (!this->pause_window) {
+		glFlush();
+		SDL_GL_SwapWindow(this->sdl_window);
+	}
+	
 
 	this->delta_time = (double)(1.0 / (this->frame_now - this->frame_last));
 	this->frame_list.push_back(this->delta_time);
@@ -130,35 +137,35 @@ int Window::window_loop()
 }
 
 
-void Window::set_window_borderless() { SDL_SetWindowBordered(this->sdl_window, SDL_FALSE); }
+void GH_Window::set_window_borderless() { SDL_SetWindowBordered(this->sdl_window, SDL_FALSE); }
 
-void Window::set_window_bordered() { SDL_SetWindowBordered(this->sdl_window, SDL_TRUE);  }
+void GH_Window::set_window_bordered() { SDL_SetWindowBordered(this->sdl_window, SDL_TRUE);  }
 
-float Window::get_delta_time()
+float GH_Window::get_delta_time()
 {
 	return (float)this->delta_time;
 }
 
-float Window::get_delta_time_smooth()
+float GH_Window::get_delta_time_smooth()
 {
 	return (float)std::accumulate(this->frame_list.begin(), this->frame_list.end(), 0.0) / this->frame_list.size();
 }
 
-int Window::get_frame_rate()
+int GH_Window::get_frame_rate()
 {
 	return (int) (1000.0 / (1.0 / this->delta_time));
 }
 
-int Window::get_frame_rate_smooth()
+int GH_Window::get_frame_rate_smooth()
 {
 	float average = (float)std::accumulate(this->frame_list.begin(), this->frame_list.end(), 0.0) / this->frame_list.size();
 	return (int)( 1000.0 / (1.0 /  average));
 }
 
-int Window::get_max_frame_rate() { return this->frame_rate_max; }
-void Window::set_max_frame_rate(int max) { this->frame_rate_max = max; }
+int GH_Window::get_max_frame_rate() { return this->frame_rate_max; }
+void GH_Window::set_max_frame_rate(int max) { this->frame_rate_max = max; }
 
-void Window::clean()
+void GH_Window::clean()
 {
 	SDL_GL_DeleteContext(this->gl_context);
 	SDL_DestroyWindow(this->sdl_window);
