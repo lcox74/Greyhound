@@ -14,7 +14,7 @@ public:
 	virtual void OnHover() {}
 	virtual void OnDisable() {}
 	virtual void Update() {}
-
+	
 	bool isEnabled() { return this->enabled; }
 	bool setEnabled(bool state) { return this->enabled = state; }
 

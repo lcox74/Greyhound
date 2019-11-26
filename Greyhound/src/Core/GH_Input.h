@@ -62,7 +62,7 @@ class GH_Input {
 
 public:
 	GH_Input() {
-		KEYCODE* all_keys = new KEYCODE[111]{
+		KEYCODE all_keys[]{
 			// NUMBERS
 			KEYCODE::ALPHA0, KEYCODE::ALPHA1, KEYCODE::ALPHA2, KEYCODE::ALPHA3, KEYCODE::ALPHA4,
 			KEYCODE::ALPHA5, KEYCODE::ALPHA6, KEYCODE::ALPHA7, KEYCODE::ALPHA8, KEYCODE::ALPHA9,
@@ -99,7 +99,7 @@ public:
 			KEYCODE::F21, KEYCODE::F22, KEYCODE::F23, KEYCODE::F24
 		};
 
-		MOUSEBUTTON* all_btns = new MOUSEBUTTON[3]{
+		MOUSEBUTTON all_btns[]{
 			MOUSEBUTTON::LEFT, MOUSEBUTTON::MIDDLE, MOUSEBUTTON::RIGHT
 		};
 
@@ -109,9 +109,6 @@ public:
 		for (int i = 0; i < 3; i++) this->mouse_states.insert(std::pair<MOUSEBUTTON, key_event>(all_btns[i], empty));
 
 		this->mouse_position = glm::vec2(0);
-
-		delete[] all_keys;
-		delete[] all_btns;
 	}
 
 	~GH_Input() { }

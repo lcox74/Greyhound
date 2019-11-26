@@ -41,19 +41,19 @@ public:
 	void set_window_width(int w) { this->width = w; }
 	void set_window_height(int h) { this->height = h; }
 
-	void draw_shape(GLfloat* verts, int vertCount, GLuint* indecies, int indeCount, int drawMode = GL_TRIANGLES)
+	void draw_shape(GLfloat verts[], int vertCount, GLuint indecies[], int indeCount, int drawMode = GL_TRIANGLES)
 	{
 		glGenVertexArrays(1, &this->VAO);
 		glGenBuffers(1, &this->VBO);
 		glBindVertexArray(this->VAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-		glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_STREAM_DRAW);
 
 		//Create IBO
 		glGenBuffers(1, &this->IBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indeCount * sizeof(GLuint), indecies, GL_STREAM_DRAW);
 
 		// position attribute
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
@@ -93,7 +93,7 @@ public:
 		float ix2 = get_relative_x(x + w - r);
 		float iy2 = get_relative_y(y + h - r);
 
-		GLfloat* vertices = new GLfloat[24]{
+		GLfloat vertices[] {
 			ix1, y1,    // 0
 			ix2, y1,	// 1
 			x1, iy1,	// 2
@@ -108,7 +108,7 @@ public:
 			ix2, y2		// 11
 		};
 
-		GLuint* indexData = new GLuint[30]{
+		GLuint indexData[] {
 			4, 1, 0,
 			4, 0, 3,
 			7, 3, 2,
@@ -130,9 +130,6 @@ public:
 		this->draw_filled_circle(x + r, y + h - r, r, color);
 		this->draw_filled_circle(x + w - r, y + r, r, color);
 		this->draw_filled_circle(x + w - r, y + h - r, r, color);
-
-		delete[] vertices;
-		delete[] indexData;
 	}
 
 	void draw_rounded_rect(float x, float y, float w, float h, float r, SDL_Color color, float thickness = 1.0f)
@@ -170,23 +167,20 @@ public:
 		float x2 = get_relative_x(x + w);
 		float y2 = get_relative_y(y + h);
 
-		GLfloat* vertices = new GLfloat[8]{
+		GLfloat vertices[] {
 			x1, y1,
 			x1, y2,
 			x2, y2,
 			x2, y1
 		};
 
-		GLuint* indexData = new GLuint[6]{ 0, 1, 2,
-											3, 0, 2 };
+		GLuint indexData[] { 0, 1, 2,
+							3, 0, 2 };
 
 		this->shapeShader->bind();
 		this->shapeShader->setColor("aColor", color);
 		this->draw_shape(vertices, 8, indexData, 6);
 		this->shapeShader->unbind();
-
-		delete[] vertices;
-		delete[] indexData;
 	}
 
 	void draw_rect(float x, float y, float w, float h, SDL_Color color)
@@ -213,23 +207,20 @@ public:
 		float xb = get_relative_x(x2);
 		float yb = get_relative_y(y2);
 
-		GLfloat* vertices = new GLfloat[8]{
+		GLfloat vertices[] {
 			xa, ya,
 			xa, yb,
 			xb, yb,
 			xb, ya
 		};
 
-		GLuint* indexData = new GLuint[6]{ 0, 1, 2,
-										   3, 0, 2 };
+		GLuint indexData[] { 0, 1, 2,
+						     3, 0, 2 };
 
 		this->shapeShader->bind();
 		this->shapeShader->setColor("aColor", color);
 		this->draw_shape(vertices, 8, indexData, 6);
 		this->shapeShader->unbind();
-
-		delete[] vertices;
-		delete[] indexData;
 	}
 
 	void draw_filled_quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, SDL_Color color)
@@ -243,23 +234,20 @@ public:
 		float xd = get_relative_x(x4);
 		float yd = get_relative_y(y4);
 
-		GLfloat* vertices = new GLfloat[8]{
+		GLfloat vertices[] {
 			xa, ya,
 			xb, yb,
 			xc, yc,
 			xd, yd
 		};
 
-		GLuint* indexData = new GLuint[6]{ 0, 1, 2,
-											2, 3, 0 };
+		GLuint indexData[] { 0, 1, 2,
+							 2, 3, 0 };
 
 		this->shapeShader->bind();
 		this->shapeShader->setColor("aColor", color);
 		this->draw_shape(vertices, 8, indexData, 6);
 		this->shapeShader->unbind();
-
-		delete[] vertices;
-		delete[] indexData;
 	}
 
 	void draw_quad(float x1, float y1, float x2, float y2, SDL_Color color)
@@ -269,23 +257,20 @@ public:
 		float xb = get_relative_x(x2);
 		float yb = get_relative_y(y2);
 
-		GLfloat* vertices = new GLfloat[8]{
+		GLfloat vertices[]{
 			xa, ya,
 			xa, yb,
 			xb, yb,
 			xb, ya
 		};
 
-		GLuint* indexData = new GLuint[6]{ 0, 1, 2,
-											3, 0, 2 };
+		GLuint indexData[]{ 0, 1, 2,
+							3, 0, 2 };
 
 		this->shapeShader->bind();
 		this->shapeShader->setColor("aColor", color);
 		this->draw_shape(vertices, 8, indexData, 6, GL_LINE_LOOP);
 		this->shapeShader->unbind();
-
-		delete[] vertices;
-		delete[] indexData;
 	}
 
 	void draw_quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, SDL_Color color)
@@ -299,23 +284,20 @@ public:
 		float xd = get_relative_x(x4);
 		float yd = get_relative_y(y4);
 
-		GLfloat* vertices = new GLfloat[8]{
+		GLfloat vertices[]{
 			xa, ya,
 			xb, yb,
 			xc, yc,
 			xd, yd
 		};
 
-		GLuint* indexData = new GLuint[6]{ 0, 1, 2,
-										2, 3, 0 };
+		GLuint indexData[]{ 0, 1, 2,
+						    2, 3, 0 };
 
 		this->shapeShader->bind();
 		this->shapeShader->setColor("aColor", color);
 		this->draw_shape(vertices, 8, indexData, 6, GL_LINE_LOOP);
 		this->shapeShader->unbind();
-
-		delete[] vertices;
-		delete[] indexData;
 	}
 
 	void draw_filled_circle(float x, float y, float r, SDL_Color color)
@@ -467,21 +449,18 @@ public:
 		float xc = get_relative_x(x3);
 		float yc = get_relative_y(y3);
 
-		GLfloat* vertices = new GLfloat[6]{
+		GLfloat vertices[]{
 			xa, ya,
 			xb, yb,
 			xc, yc
 		};
 
-		GLuint* indexData = new GLuint[3]{ 0, 1, 2 };
+		GLuint indexData[]{ 0, 1, 2 };
 
 		this->shapeShader->bind();
 		this->shapeShader->setColor("aColor", color);
 		this->draw_shape(vertices, 6, indexData, 3);
 		this->shapeShader->unbind();
-
-		delete[] vertices;
-		delete[] indexData;
 	}
 
 	void draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, SDL_Color color)
@@ -493,21 +472,18 @@ public:
 		float xc = get_relative_x(x3);
 		float yc = get_relative_y(y3);
 
-		GLfloat* vertices = new GLfloat[6]{
+		GLfloat vertices[]{
 			xa, ya,
 			xb, yb,
 			xc, yc
 		};
 
-		GLuint* indexData = new GLuint[3]{ 0, 1, 2 };
+		GLuint indexData[] { 0, 1, 2 };
 
 		this->shapeShader->bind();
 		this->shapeShader->setColor("aColor", color);
 		this->draw_shape(vertices, 6, indexData, 3, GL_LINE_LOOP);
 		this->shapeShader->unbind();
-
-		delete[] vertices;
-		delete[] indexData;
 	}
 
 	void draw_text(std::string text, float x, float y, int size, SDL_Color color, std::string fontfamily = "res\\Fonts\\OpenSans\\OpenSansRegular.ttf", float linespace = 1.55f)
@@ -648,7 +624,6 @@ private:
 				return this->fonts[key.c_str()];
 		}
 
-		std::cout << "In" << std::endl;
 		font_data newFont;
 		newFont.textures.resize(128);
 		newFont.height = (float)size;
@@ -668,6 +643,7 @@ private:
 			text_make_textures(face, i, newFont.list_base, &newFont.textures.front());
 		}
 
+		//std::cout << key.c_str() << std::endl;
 		this->fonts.insert(std::pair<const char*, font_data>(key.c_str(), newFont));
 
 		FT_Done_Face(face);
