@@ -10,6 +10,10 @@
 
 #include "Shader.h"
 
+#include <math.h>
+
+#define PI 3.14159265359f
+
 class GH_Graphics
 {
 public:
@@ -72,7 +76,7 @@ public:
 
 	void set_clear_colour(SDL_Color color) { glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f); }
 
-	void draw_rounded_rect(float x, float y, float w, float h, float r, SDL_Color color)
+	void draw_filled_rounded_rect(float x, float y, float w, float h, float r, SDL_Color color)
 	{
 		// Radius Limits
 		float maxRadius = std::fminf(w, h);
@@ -129,6 +133,34 @@ public:
 
 		delete[] vertices;
 		delete[] indexData;
+	}
+
+	void draw_rounded_rect(float x, float y, float w, float h, float r, SDL_Color color, float thickness = 1.0f)
+	{
+		// Radius Limits
+		float maxRadius = std::fminf(w, h);
+		if (r > maxRadius) r = maxRadius;
+		if (r < 0) r = 0;
+
+		float x1 = get_relative_x(x);
+		float y1 = get_relative_y(y);
+		float x2 = get_relative_x(x + w);
+		float y2 = get_relative_y(y + h);
+
+		float ix1 = get_relative_x(x + r);
+		float iy1 = get_relative_y(y + r);
+		float ix2 = get_relative_x(x + w - r);
+		float iy2 = get_relative_y(y + h - r);
+
+		this->draw_line(x + r, y, x + w - r, y, color, thickness);
+		this->draw_line(x, y + r, x, y + h - r, color, thickness);
+		this->draw_line(x + w, y + r, x + w, y + h - r, color, thickness);
+		this->draw_line(x + r, y + h, x + w - r, y + h, color, thickness);
+
+		this->draw_circle_section(x + r, y + r, r, 180, 90, color);
+		this->draw_circle_section(x + r, y + h - r, r, 270, 90, color);
+		this->draw_circle_section(x + w - r, y + r, r, 90, 90, color);
+		this->draw_circle_section(x + w - r, y + h - r, r, 0, 90, color);
 	}
 
 	void draw_filled_rect(float x, float y, float w, float h, SDL_Color color)
@@ -316,6 +348,40 @@ public:
 		}
 	}
 
+	void draw_filled_circle_section(float x, float y, float r, float start_angle, float end_angle, SDL_Color color)
+	{
+		float x1 = get_relative_x(x);
+		float y1 = get_relative_y(y);
+
+		float radiusx = r * 2.0f / this->width;
+		float radiusy = r * 2.0f / this->height;
+
+		float start_angle_radi = start_angle * PI / 180 + PI / 2;
+		float end_angle_radi = start_angle_radi + (end_angle * PI / 180);
+		
+
+		const int steps = 100;
+		const float angle = PI * 2 / steps;
+
+		float prevX = x1;
+		float prevY = y1 + radiusy;
+
+		for (int i = steps * (start_angle_radi / steps) / angle + 1; i < steps * (end_angle_radi/steps) / angle - 1; i++) {
+			float newX = x1 + radiusx * sin(angle * i);
+			float newY = y1 - radiusy * cos(angle * i);
+
+			glBegin(GL_TRIANGLES);
+			glColor3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+			glVertex3f(x1, y1, 0.0f);
+			glVertex3f(prevX, prevY, 0.0f);
+			glVertex3f(newX, newY, 0.0f);
+			glEnd();
+
+			prevX = newX;
+			prevY = newY;
+		}
+	}
+
 	void draw_circle(float x, float y, float r, SDL_Color color)
 	{
 		float x1 = get_relative_x(x);
@@ -336,6 +402,49 @@ public:
 
 			if (prevX != newX) {
 
+				glBegin(GL_LINES);
+				glColor3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+				glVertex3f(prevX, prevY, 0.0f);
+				glVertex3f(newX, newY, 0.0f);
+				glEnd();
+			}
+
+			prevX = newX;
+			prevY = newY;
+		}
+	}
+
+	void draw_circle_section(float x, float y, float r, float start_angle, float end_angle, SDL_Color color)
+	{
+		float x1 = get_relative_x(x);
+		float y1 = get_relative_y(y);
+
+		float radiusx = r * 2.0f / this->width;
+		float radiusy = r * 2.0f / this->height;
+
+		float start_angle_radi = start_angle * PI / 180;
+		float end_angle_radi = start_angle_radi + (end_angle * PI / 180);
+
+		bool isStart = false;
+		float startX, startY;
+
+		const int steps = 100;
+		const float angle = PI * 2 / steps;
+
+		float prevX = x1 + radiusx;
+		float prevY = y1;
+
+		for (int i = steps * (start_angle_radi / steps) / angle; i <= steps * (end_angle_radi / steps) / angle; i++) {
+			float newX = x1 + radiusx * sin(angle * i);
+			float newY = y1 - radiusy * cos(angle * i);
+
+			if (!isStart) {
+				startX = newX;
+				startY = newY;
+				isStart = true;
+			}
+			else if (startX != newX || startY != newY)
+			{
 				glBegin(GL_LINES);
 				glColor3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
 				glVertex3f(prevX, prevY, 0.0f);

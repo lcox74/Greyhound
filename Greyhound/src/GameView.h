@@ -35,9 +35,9 @@ public:
 
 		r = std::abs(std::sin(temp) * 25);
 
-		this->graphics->draw_rounded_rect(x, y, 50, 50, 15, { 40, 100, 200 });
+		this->graphics->draw_filled_rounded_rect(x, y, 50, 50, 15, { 40, 100, 200 });
 		
-		this->graphics->draw_rounded_rect(400, 200, 100, 50, r, { 40, 200, 100 });
+		this->graphics->draw_filled_rounded_rect(400, 200, 100, 50, r, { 40, 200, 100 });
 		
 		this->r = r + input->get_interpolated_keys(KEYCODE::Q, KEYCODE::E) * speed * this->get_delta_time();
 		

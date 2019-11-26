@@ -16,28 +16,29 @@ public:
 
 	void Update()
 	{	
-		this->getGraphics()->draw_rounded_rect(this->x, this->y, this->w, this->h, 5, { 40, 167, 69 });
+		this->getGraphics()->draw_filled_rounded_rect(this->x, this->y, this->w, this->h, 5, { 40, 167, 69 });
 		this->getGraphics()->draw_text("OK", this->x + (this->w / 2.0f) - 10, this->y + (this->h / 2.0f) + 8, 12, { 255, 255, 255 });
 	}
 
 	void OnHover()
 	{
-		this->getGraphics()->draw_rounded_rect(this->x, this->y, this->w, this->h, 5, { 37, 155, 64 });
+		this->getGraphics()->draw_filled_rounded_rect(this->x, this->y, this->w, this->h, 5, { 37, 155, 64 });
 		this->getGraphics()->draw_text("OK", this->x + (this->w / 2.0f) - 10, this->y + (this->h / 2.0f) + 8, 12, { 255, 255, 255 });
 
 	}
 
 	void OnClick()
 	{
-		this->getGraphics()->draw_rounded_rect(this->x, this->y, this->w, this->h, 5, { 35, 144, 60 });
+		this->getGraphics()->draw_filled_rounded_rect(this->x, this->y, this->w, this->h, 5, { 35, 144, 60 });
 		this->getGraphics()->draw_text("OK", this->x + (this->w / 2.0f) - 10, this->y + (this->h / 2.0f) + 8, 12, { 255, 255, 255 });
+		this->getGraphics()->draw_rounded_rect(this->x - 4, this->y - 4, this->w + 8, this->h + 8, 5, { 35, 144, 60 });
 
 	}
 
 	void OnDrag()
 	{
-		this->getGraphics()->draw_rounded_rect(this->x, this->y, this->w, this->h, 5, { 35, 144, 60 });
+		this->getGraphics()->draw_filled_rounded_rect(this->x, this->y, this->w, this->h, 5, { 35, 144, 60 });
 		this->getGraphics()->draw_text("OK", this->x + (this->w / 2.0f) - 10, this->y + (this->h / 2.0f) + 8, 12, { 255, 255, 255 });
-
+		this->getGraphics()->draw_rounded_rect(this->x - 4, this->y - 4, this->w + 8, this->h + 8, 5, { 35, 144, 60 });
 	}
 };
