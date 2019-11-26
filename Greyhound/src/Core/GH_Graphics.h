@@ -11,6 +11,9 @@
 #include "Shader.h"
 
 #include <math.h>
+#include <string>
+#include <functional>
+
 
 #define PI 3.14159265359f
 
@@ -26,7 +29,7 @@ public:
 	}
 	~GH_Graphics() 
 	{
-		std::map<const char*, font_data>::iterator it;
+		std::map<std::size_t, font_data>::iterator it;
 		for (it = this->fonts.begin(); it != this->fonts.end(); it++)
 		{
 			glDeleteLists(it->second.list_base, 128);
@@ -605,7 +608,7 @@ private:
 	FT_Library ft;
 	FT_Face face;
 
-	std::map<const char*, font_data> fonts;
+	std::map<std::size_t, font_data> fonts;
 	std::vector<std::string> keys;
 
 	Shader* shapeShader = nullptr;
@@ -618,10 +621,11 @@ private:
 		if (std::to_string(size) == "") return font_data();
 
 		std::string key = font + ":" + std::to_string(size);
-		std::map<const char*, font_data>::iterator it;
+		std::size_t h1 = std::hash<std::string>{}(key);
+		std::map<std::size_t, font_data>::iterator it;
 		for (it = this->fonts.begin(); it != this->fonts.end(); it++) {
-			if (it->first == key.c_str())
-				return this->fonts[key.c_str()];
+			if (it->first == h1)
+				return this->fonts[h1];
 		}
 
 		font_data newFont;
@@ -643,8 +647,7 @@ private:
 			text_make_textures(face, i, newFont.list_base, &newFont.textures.front());
 		}
 
-		//std::cout << key.c_str() << std::endl;
-		this->fonts.insert(std::pair<const char*, font_data>(key.c_str(), newFont));
+		this->fonts.insert(std::pair<std::size_t, font_data>(h1, newFont));
 
 		FT_Done_Face(face);
 		FT_Done_FreeType(library);
