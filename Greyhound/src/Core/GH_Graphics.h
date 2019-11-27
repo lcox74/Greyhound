@@ -489,7 +489,7 @@ public:
 		this->shapeShader->unbind();
 	}
 
-	void draw_text(std::string text, float x, float y, int size, SDL_Color color, std::string fontfamily = "res\\Fonts\\OpenSans\\OpenSansRegular.ttf", float linespace = 1.55f)
+	void draw_text(std::string text, float x, float y, int size, SDL_Color color, std::string fontfamily = "res\\Fonts\\Inter-3.11\\Inter (Hinted, for Windows)\\Inter-Regular.ttf", float linespace = 1.55f)
 	{
 		font_data temp = text_init(fontfamily, size);
 		glColor3f((float)color.r / 255.0f, (float)color.g / 255.0f, (float)color.b / 255.0f);
