@@ -351,7 +351,7 @@ public:
 		float prevX = x1;
 		float prevY = y1 + radiusy;
 
-		for (int i = steps * (start_angle_radi / steps) / angle + 1; i < steps * (end_angle_radi/steps) / angle - 1; i++) {
+		for (int i = (int)(steps * (start_angle_radi / steps) / angle + 1); i <= (int)(steps * (end_angle_radi/steps) / angle - 1); i++) {
 			float newX = x1 + radiusx * sin(angle * i);
 			float newY = y1 - radiusy * cos(angle * i);
 
@@ -419,7 +419,7 @@ public:
 		float prevX = x1 + radiusx;
 		float prevY = y1;
 
-		for (int i = steps * (start_angle_radi / steps) / angle; i <= steps * (end_angle_radi / steps) / angle; i++) {
+		for (int i = (int)(steps * (start_angle_radi / steps) / angle); i <= (int)(steps * (end_angle_radi / steps) / angle); i++) {
 			float newX = x1 + radiusx * sin(angle * i);
 			float newY = y1 - radiusy * cos(angle * i);
 
@@ -489,7 +489,7 @@ public:
 		this->shapeShader->unbind();
 	}
 
-	void draw_text(std::string text, float x, float y, int size, SDL_Color color, std::string fontfamily = "res\\Fonts\\Inter-3.11\\Inter (Hinted, for Windows)\\Inter-Regular.ttf", float linespace = 1.55f)
+	void draw_text(std::string text, float x, float y, int size, SDL_Color color, std::string fontfamily = "res\\Fonts\\Inter-3.11\\Inter\\Inter-Regular.otf", float linespace = 1.55f)
 	{
 		font_data temp = text_init(fontfamily, size);
 		glColor3f((float)color.r / 255.0f, (float)color.g / 255.0f, (float)color.b / 255.0f);
