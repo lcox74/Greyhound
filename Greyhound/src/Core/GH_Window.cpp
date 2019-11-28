@@ -3,6 +3,7 @@
 
 void GH_Window::init(std::string name, int width, int height, bool bfullscreen)
 {
+
 	this->name = name;
 	this->width = width;
 	this->height = height;

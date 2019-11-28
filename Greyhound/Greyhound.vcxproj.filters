@@ -539,6 +539,9 @@
     <ClInclude Include="src\Core\GH_Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GH_Profiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="dependencies\GLEW\lib\Release\Win32\glew32.lib" />

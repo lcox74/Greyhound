@@ -7,6 +7,7 @@
 #include <vector>
 #include <numeric>
 #include <initializer_list>
+#include <fstream>
 
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -36,10 +37,10 @@
 #include "GH_Input.h"
 #include "UI/GH_UI.h"
 
+
 class GH_Window
 {
 public:
-
 	int window_loop();
 
 	virtual void Update() = 0;
@@ -85,5 +86,7 @@ private:
 	double delta_time = 0;
 	int frame_rate_max = 60;
 	bool pause_window = false;
+
+	DWORD pid = GetCurrentProcessId();
 };
 

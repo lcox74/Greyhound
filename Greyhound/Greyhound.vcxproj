@@ -91,13 +91,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)dependencies\SDL2\include;$(ProjectDir)dependencies\GLEW\include;$(ProjectDir)dependencies\freetype-2.10.1\include;$(ProjectDir)dependencies\glm-0.9.9.6;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)dependencies\SDL2\include;$(ProjectDir)dependencies\GLEW\include;$(ProjectDir)dependencies\freetype-2.10.1\include;$(ProjectDir)dependencies;$(ProjectDir)dependencies\glm-0.9.9.6;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)dependencies\SDL2\lib\x86;$(ProjectDir)dependencies\GLEW\lib\Release\Win32;$(ProjectDir)dependencies\freetype-2.10.1\objs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;glew32s.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;glew32s.lib;freetype.lib;kernel32.lib;user32.lib;psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -324,6 +324,7 @@
     <ClInclude Include="src\Core\Asserts.h" />
     <ClInclude Include="src\Core\GH_Input.h" />
     <ClInclude Include="src\Core\GH_Graphics.h" />
+    <ClInclude Include="src\Core\GH_Profiler.h" />
     <ClInclude Include="src\Core\UI\GH_BUTTON.h" />
     <ClInclude Include="src\Core\UI\GH_UI.h" />
     <ClInclude Include="src\Core\UI\GH_UI_Element.h" />
